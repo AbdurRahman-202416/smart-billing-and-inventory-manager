@@ -40,7 +40,7 @@ export default function Sidebar() {
       <aside className="hidden md:flex w-64 min-h-screen bg-gray-900 text-white flex-col p-4 shadow-2xl shrink-0 sticky top-0 h-screen">
         <div className="flex items-center gap-2 text-xl font-extrabold mb-10 px-2 text-indigo-400">
           <Monitor size={32} className="text-white shrink-0" />
-          <span className="tracking-tight text-sm">Smart Inventory Management</span>
+          <span className="tracking-tight text-md">Smart Inventory Management</span>
         </div>
 
         <nav className="flex flex-col gap-1.5">
