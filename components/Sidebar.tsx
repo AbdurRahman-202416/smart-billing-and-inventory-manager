@@ -22,13 +22,19 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* ── Mobile Hamburger Button ────────────────────────────────────────── */}
-      <button
-        onClick={toggleSidebar}
-        className="md:hidden fixed top-4 left-4 z-[60] p-2 bg-gray-900 text-white rounded-xl shadow-lg border border-gray-800"
-      >
-        {isOpen ? <X size={24} /> : <Menu size={24} />}
-      </button>
+      {/* ── Mobile Top Navbar ────────────────────────────────────────────── */}
+      <header className="md:hidden fixed top-0 left-0 right-0 h-16 bg-gray-900 border-b border-gray-800 z-[60] flex items-center px-4 shadow-xl">
+        <button
+          onClick={toggleSidebar}
+          className="p-2 bg-gray-800 text-white rounded-xl hover:bg-gray-700 transition-colors"
+        >
+          {isOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+        <div className="ml-4 flex items-center gap-2">
+          <Monitor size={24} className="text-indigo-400" />
+          <span className="text-white font-bold text-sm tracking-tight truncate">Smart Inventory</span>
+        </div>
+      </header>
 
       {/* ── Desktop Sidebar (hidden on mobile) ────────────────────────────── */}
       <aside className="hidden md:flex w-64 min-h-screen bg-gray-900 text-white flex-col p-4 shadow-2xl shrink-0 sticky top-0 h-screen">
