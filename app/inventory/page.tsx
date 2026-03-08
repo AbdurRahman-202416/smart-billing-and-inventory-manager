@@ -196,7 +196,7 @@ export default function InventoryPage() {
     <div>
       <h1 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
         <Package className="text-indigo-600" />
-        Inventory Management Hub
+        Inventory Management
       </h1>
 
       {/* ── Add Product card ─────────────────────────────────────────────── */}
@@ -285,7 +285,7 @@ export default function InventoryPage() {
           )}
 
           {/* Manual fields */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 gap-4">
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1">
                 Price (Tk) <span className="text-red-400">*</span>
@@ -301,7 +301,20 @@ export default function InventoryPage() {
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
               />
             </div>
-            <div className="col-span-2">
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">
+                Initial Stock
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={form.stock}
+                onChange={setField("stock")}
+                placeholder="20"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              />
+            </div>
+            <div className="col-span-2 md:col-span-2">
               <label className="block text-xs font-medium text-gray-500 mb-1">
                 Size / Weight
               </label>
@@ -323,20 +336,7 @@ export default function InventoryPage() {
                 </select>
               </div>
             </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">
-                Initial Stock
-              </label>
-              <input
-                type="number"
-                min="0"
-                value={form.stock}
-                onChange={setField("stock")}
-                placeholder="1"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-              />
-            </div>
-            <div>
+            <div className="col-span-2 md:col-span-1">
               <label className="block text-xs font-medium text-gray-500 mb-1">
                 Category
               </label>
@@ -400,7 +400,7 @@ export default function InventoryPage() {
             <p className="text-sm">{searchQuery ? "No products match your search." : "No products yet — scan a barcode to get started."}</p>
           </div>
         ) : (
-          <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
+          <motion.div layout className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
             <AnimatePresence>
               {filteredInventory.map((product) => (
                 <motion.div
@@ -413,7 +413,7 @@ export default function InventoryPage() {
                   className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow flex flex-col group relative"
                 >
                 {/* Product image */}
-                <Link href={`/product/${product.id}`} className="h-40 bg-gray-50 flex items-center justify-center p-3 relative cursor-pointer">
+                <Link href={`/product/${product.id}`} className="h-32 md:h-40 bg-gray-50 flex items-center justify-center p-3 relative cursor-pointer">
                   <div className="absolute inset-0 bg-indigo-600/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                   {product.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -430,7 +430,7 @@ export default function InventoryPage() {
                 {/* Card body */}
                 <div className="p-4 space-y-1">
                   <Link href={`/product/${product.id}`}>
-                    <p className="font-semibold text-gray-800 truncate hover:text-indigo-600 cursor-pointer">{product.name}</p>
+                    <p className="font-semibold text-gray-800 text-xs md:text-sm truncate hover:text-indigo-600 cursor-pointer">{product.name}</p>
                   </Link>
 
                   {product.brand && (
@@ -438,7 +438,7 @@ export default function InventoryPage() {
                   )}
 
                   <div className="flex items-center justify-between pt-1">
-                    <span className="text-indigo-600 font-bold text-sm">
+                    <span className="text-indigo-600 font-bold text-xs md:text-sm">
                       Tk{product.price.toFixed(2)}
                     </span>
                     <span
