@@ -93,12 +93,9 @@ export default function Sidebar() {
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className="md:hidden fixed inset-y-0 left-0 z-[55] w-72 bg-gray-900 text-white flex flex-col p-4 shadow-2xl"
             >
-              <div className="flex items-center gap-2 text-xl font-extrabold mb-10 px-2 mt-12 text-indigo-400">
-                <Monitor size={32} className="text-white shrink-0" />
-                <span className="tracking-tight text-sm">Smart Inventory Management</span>
-              </div>
+              <div className="mt-16" /> {/* Space for the top navbar buttons */}
 
-              <nav className="flex flex-col gap-1.5">
+              <nav className="flex flex-col gap-1.5 pt-4">
                 {navLinks.map(({ href, fullLabel, icon: Icon }) => (
                   <Link
                     key={href}
