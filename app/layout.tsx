@@ -17,7 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       */}
       <body className="flex flex-col md:flex-row min-h-screen bg-gray-100">
         <Sidebar />
-        <main className="flex-1 p-4 md:p-6 overflow-auto pb-24 md:pb-6">
+        <main className="flex-1 p-4 md:p-6 overflow-auto pt-16 md:pt-6 pb-6 md:pb-6">
           <QueryProvider>{children}</QueryProvider>
         </main>
       </body>
