@@ -94,5 +94,3 @@ npm start
 ```
 
 **Designed with ❤️ for Smart Retailers.**
-# smart-billing-and-inventory-manager
-# smart-billing-and-inventory-manager
