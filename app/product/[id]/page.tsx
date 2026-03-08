@@ -183,7 +183,7 @@ export default function ProductDetailsPage() {
                 <Tag size={12} />
                 {product.category || "General"}
               </span>
-              <h1 className="text-4xl font-extrabold text-gray-900 leading-tight">
+              <h1 className="text-2xl md:text-3xl xl:text-4xl font-extrabold text-gray-900 leading-tight">
                 {product.name}
               </h1>
               {product.brand && (

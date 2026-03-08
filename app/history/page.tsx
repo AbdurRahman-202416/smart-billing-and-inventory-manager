@@ -45,20 +45,22 @@ export default function HistoryPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-            <BarChart3 className="text-indigo-600" />
+          <h1 className="text-xl md:text-2xl font-bold text-gray-800 flex items-center gap-2">
+            <BarChart3 className="text-indigo-600" size={24} />
             Accounting & Sales Ledger
           </h1>
           <p className="text-sm text-gray-500 mt-1">
             Review detailed transaction records and stock movement.
           </p>
         </div>
-        <div className="bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 flex items-center gap-2">
-          <Receipt size={18} className="text-gray-400" />
-          <span className="font-semibold text-gray-700">{bills.length}</span>
-          <span className="text-sm text-gray-500">Invoices generated</span>
+        <div className="bg-white px-4 py-3 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between sm:justify-start gap-3 w-content">
+          <div className="flex items-center gap-2">
+            <Receipt size={18} className="text-indigo-400" />
+            <span className="text-sm text-gray-500">Total Invoices</span>
+          </div>
+          <span className="font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-lg text-sm">{bills.length}</span>
         </div>
       </div>
 

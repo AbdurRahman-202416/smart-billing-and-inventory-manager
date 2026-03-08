@@ -194,9 +194,9 @@ export default function InventoryPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-        <Package className="text-indigo-600" />
-        Inventory Management
+      <h1 className="text-xl md:text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+        <Package className="text-indigo-600" size={24} />
+        Inventory Management Hub
       </h1>
 
       {/* ── Add Product card ─────────────────────────────────────────────── */}

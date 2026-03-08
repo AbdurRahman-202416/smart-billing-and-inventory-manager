@@ -121,7 +121,7 @@ export default function BillingPage() {
         />
       )}
       <h1 className="text-xl md:text-2xl font-bold text-gray-800 mb-4 md:mb-6 flex items-center gap-2 md:gap-3">
-        <Monitor className="text-indigo-600" size={22} />
+        <Monitor className="text-indigo-600" size={24} />
         Retail POS Terminal
       </h1>
 
