@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       {/*
         flex-col on mobile (sidebar at bottom via fixed pos) → md:flex-row on desktop
         pb-20 on mobile to give space above the bottom nav bar
