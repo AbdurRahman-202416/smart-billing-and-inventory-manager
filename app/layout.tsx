@@ -6,6 +6,9 @@ import QueryProvider from "@/components/QueryProvider";
 export const metadata: Metadata = {
   title: "Smart Manager | Inventory & POS",
   description: "Next-generation store management and POS system",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
