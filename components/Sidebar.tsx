@@ -32,7 +32,7 @@ export default function Sidebar() {
         </button>
         <div className="ml-4 flex items-center gap-2">
           <Monitor size={24} className="text-indigo-400" />
-          <span className="text-white font-bold text-sm tracking-tight truncate">Smart Inventory</span>
+          <span className="text-white font-bold text-sm tracking-tight truncate">Smart Inventory Management</span>
         </div>
       </header>
 
@@ -93,7 +93,7 @@ export default function Sidebar() {
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className="md:hidden fixed inset-y-0 left-0 z-[55] w-72 bg-gray-900 text-white flex flex-col p-4 shadow-2xl"
             >
-              <div className="mt-16" /> {/* Space for the top navbar buttons */}
+              <div className="mt-10" /> {/* Space for the top navbar buttons */}
 
               <nav className="flex flex-col gap-1.5 pt-4">
                 {navLinks.map(({ href, fullLabel, icon: Icon }) => (
