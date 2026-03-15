@@ -53,7 +53,7 @@ export default function BarcodeScanner({ onScan, onClose }: Props) {
         config,
         {
           fps: 30,
-          qrbox: { width: 320, height: 320 },
+          qrbox: { width: 200, height: 200 },
           aspectRatio: 1.0,
           disableFlip: true,
         },

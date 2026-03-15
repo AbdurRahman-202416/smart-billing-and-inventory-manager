@@ -442,7 +442,7 @@ export default function InventoryPage() {
                       Tk{product.price.toFixed(2)}
                     </span>
                     <span
-                      className={`text-xs px-2 py-0.5 rounded-full font-medium ${stockBadge(
+                      className={`text-[10px] sm:text-xs text-nowrap px-2 py-0.5 rounded-full font-medium ${stockBadge(
                         product.stock
                       )}`}
                     >
@@ -461,8 +461,8 @@ export default function InventoryPage() {
                   )}
 
                   {product.barcode && (
-                    <p className="text-xs text-gray-300 font-mono truncate pt-1">
-                      {product.barcode}
+                    <p className="text-[10px] sm:text-sm text-gray-300 font-mono truncate pt-1">
+                      Code:{product.barcode}
                     </p>
                   )}
 
