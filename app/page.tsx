@@ -57,6 +57,20 @@ export default function HomePage() {
     setIsLoading(true);
     setFetchError(null);
     try {
+      const cacheKey = `global_products_${term}_${pg}`;
+      const cached = window.localStorage.getItem(cacheKey);
+      
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        // Retain cache for 5 minutes
+        if (Date.now() - timestamp < 1000 * 60 * 5) {
+          setApiData(data);
+          setIsLoading(false);
+          setHasSearched(true);
+          return;
+        }
+      }
+
       const params = new URLSearchParams({
         action: "process",
         json: "true",
@@ -75,6 +89,11 @@ export default function HomePage() {
       const res = await fetch(`${BASE}/cgi/search.pl?${params.toString()}`);
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
       const json: ApiResponse = await res.json();
+      
+      window.localStorage.setItem(cacheKey, JSON.stringify({
+        data: json,
+        timestamp: Date.now()
+      }));
       setApiData(json);
     } catch (err: unknown) {
       setFetchError(err instanceof Error ? err.message : "Unknown error");
