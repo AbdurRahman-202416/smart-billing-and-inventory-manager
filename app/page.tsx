@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -104,13 +104,13 @@ export default function HomePage() {
   };
 
   // ── initial load on mount ────────────────────────────────────────────────
-  // We use a ref flag so it only runs once
-  const [booted, setBooted] = useState(false);
-  if (!booted) {
-    setBooted(true);
-    // Schedule after render to avoid SSR issues
-    setTimeout(() => fetchProducts("", 1), 0);
-  }
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    fetchProducts("", 1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // ── search trigger ───────────────────────────────────────────────────────
   const handleSearch = () => {
@@ -167,6 +167,14 @@ export default function HomePage() {
   const noResults = hasSearched && !isLoading && !fetchError && products.length === 0;
 
   // ── render ───────────────────────────────────────────────────────────────
+  if (!mounted) {
+    return (
+      <div className="flex flex-col items-center justify-center py-32 gap-4">
+        <Loader2 size={48} className="animate-spin text-indigo-200" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-5">
       {/* ── Header ──────────────────────────────────────────────────────── */}

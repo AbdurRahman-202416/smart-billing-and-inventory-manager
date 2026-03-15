@@ -29,8 +29,10 @@ export default function ProductDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isGlobal, setIsGlobal] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const productId = params.id as string;
     
     // 1. Try to find in local inventory
@@ -92,7 +94,7 @@ export default function ProductDetailsPage() {
     }
   };
 
-  if (loading) {
+  if (!mounted || loading) {
     return (
       <div className="flex h-[70vh] flex-col items-center justify-center space-y-4">
         <div className="h-12 w-12 animate-spin rounded-full border-4 border-indigo-100 border-t-indigo-600"></div>
