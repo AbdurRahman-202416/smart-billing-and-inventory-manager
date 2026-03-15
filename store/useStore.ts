@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import toast from "react-hot-toast";
 import type { Product, CartItem, Bill } from "@/types";
 
 interface StoreState {
@@ -44,7 +45,7 @@ export const useStore = create<StoreState>()(
         const product = inventory.find((p) => p.barcode === barcode);
 
         if (!product) {
-          alert(`No product found with barcode: ${barcode}`);
+          toast.error(`No product found with barcode: ${barcode}`);
           return;
         }
 

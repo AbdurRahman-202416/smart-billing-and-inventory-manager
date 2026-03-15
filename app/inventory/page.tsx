@@ -9,6 +9,7 @@ import { foodApi } from "@/lib/axios";
 import type { FoodApiResponse } from "@/lib/axios";
 import BarcodeScanner from "@/components/BarcodeScanner";
 import type { Product } from "@/types";
+import toast from "react-hot-toast";
 
 // ---------------------------------------------------------------------------
 // Form state
@@ -69,7 +70,6 @@ export default function InventoryPage() {
 
   const [showScanner, setShowScanner] = useState(false);
   const [fetching, setFetching] = useState(false);
-  const [fetchError, setFetchError] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [mounted, setMounted] = useState(false);
   const [deleteData, setDeleteData] = useState<{ id: string; name: string } | null>(null);
@@ -89,14 +89,13 @@ export default function InventoryPage() {
   const handleScan = useCallback(async (barcode: string) => {
     setShowScanner(false);
     setFetching(true);
-    setFetchError(null);
     setForm((prev) => ({ ...prev, barcode }));
 
     try {
       const { data } = await foodApi.get<FoodApiResponse>(`/product/${barcode}.json`);
 
       if (data.status !== 1 || !data.product) {
-        setFetchError("Product not found in OpenFoodFacts — fill details manually.");
+        toast.error("Product not found in OpenFoodFacts — fill details manually.");
         return;
       }
 
@@ -116,8 +115,9 @@ export default function InventoryPage() {
         sizeValue: sizeValue || prev.sizeValue,
         unitType: unitType || prev.unitType,
       }));
+      toast.success("Successfully fetched product details!");
     } catch {
-      setFetchError("Network error fetching product data — fill details manually.");
+      toast.error("Network error fetching product data — fill details manually.");
     } finally {
       setFetching(false);
     }
@@ -144,7 +144,7 @@ export default function InventoryPage() {
 
     addProduct(newProduct);
     setForm(EMPTY_FORM);
-    setFetchError(null);
+    toast.success("Product added to inventory!");
   };
 
   const handleDelete = (id: string, name: string) => {
@@ -157,10 +157,12 @@ export default function InventoryPage() {
     if (adminPassword === "1234") {
       if (deleteData) {
         removeProduct(deleteData.id);
+        toast.success(`Deleted ${deleteData.name}`);
         setDeleteData(null);
       }
     } else {
       setAdminError(true);
+      toast.error("Incorrect admin password!");
     }
   };
 
@@ -228,13 +230,6 @@ export default function InventoryPage() {
               </span>
             )}
           </div>
-
-          {/* Fetch error / warning */}
-          {fetchError && (
-            <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-4 py-2">
-              ⚠ {fetchError}
-            </p>
-          )}
 
           {/* Auto-filled fields */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
