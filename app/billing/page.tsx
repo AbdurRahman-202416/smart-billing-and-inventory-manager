@@ -104,8 +104,28 @@ export default function BillingPage() {
   // ── Render ───────────────────────────────────────────────────────────────────
   if (!mounted) {
     return (
-      <div className="flex h-[50vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-600"></div>
+      <div className="animate-pulse space-y-6">
+        <div className="h-8 bg-gray-200 rounded-md w-48" />
+        <div className="flex flex-col lg:flex-row gap-6 items-start">
+          <div className="w-full lg:w-80 xl:w-96 shrink-0 h-80 bg-gray-200 rounded-2xl" />
+          <div className="w-full flex-1 bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col h-[60vh] overflow-hidden">
+            <div className="h-14 border-b border-gray-100 bg-gray-50 flex items-center px-5">
+              <div className="h-5 bg-gray-200 rounded w-24" />
+            </div>
+            <div className="p-5 space-y-4">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="flex gap-4 items-center">
+                  <div className="h-12 w-12 bg-gray-200 rounded-lg shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 bg-gray-200 rounded w-1/2" />
+                    <div className="h-3 bg-gray-200 rounded w-1/4" />
+                  </div>
+                  <div className="h-8 bg-gray-200 rounded w-20" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

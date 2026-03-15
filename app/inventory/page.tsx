@@ -188,8 +188,45 @@ export default function InventoryPage() {
   // ── render ─────────────────────────────────────────────────────────────────
   if (!mounted) {
     return (
-      <div className="flex h-[50vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-600"></div>
+      <div className="space-y-6 animate-pulse">
+        {/* Skeleton Header */}
+        <div className="h-8 bg-gray-200 rounded-md w-64 mb-6" />
+
+        {/* Skeleton Form Box */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
+          <div className="h-6 bg-gray-200 rounded w-40 mb-6" />
+          <div className="space-y-5">
+            <div className="h-10 bg-gray-200 rounded-lg w-32" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="h-10 bg-gray-200 rounded-lg" />
+              <div className="h-10 bg-gray-200 rounded-lg" />
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 gap-4">
+              <div className="h-10 bg-gray-200 rounded-lg" />
+              <div className="h-10 bg-gray-200 rounded-lg" />
+              <div className="col-span-2 md:col-span-2 h-10 bg-gray-200 rounded-lg" />
+              <div className="col-span-2 md:col-span-1 h-10 bg-gray-200 rounded-lg" />
+            </div>
+            <div className="h-10 bg-gray-200 rounded-lg w-40" />
+          </div>
+        </div>
+
+        {/* Skeleton Product Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <div key={i} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
+              <div className="h-32 md:h-40 bg-gray-200 w-full" />
+              <div className="p-4 space-y-3">
+                <div className="h-4 bg-gray-200 rounded w-3/4" />
+                <div className="h-3 bg-gray-200 rounded w-1/2" />
+                <div className="flex justify-between items-center pt-2">
+                  <div className="h-4 bg-gray-200 rounded w-1/3" />
+                  <div className="h-4 bg-gray-200 rounded-full w-16" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

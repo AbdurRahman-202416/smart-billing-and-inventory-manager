@@ -169,8 +169,35 @@ export default function HomePage() {
   // ── render ───────────────────────────────────────────────────────────────
   if (!mounted) {
     return (
-      <div className="flex flex-col items-center justify-center py-32 gap-4">
-        <Loader2 size={48} className="animate-spin text-indigo-200" />
+      <div className="space-y-5 animate-pulse">
+        {/* Skeleton Header */}
+        <div className="flex flex-col gap-4">
+          <div>
+            <div className="h-8 bg-gray-200 rounded-md w-64 mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded-md w-48"></div>
+          </div>
+          <div className="flex gap-2 w-full">
+            <div className="h-10 bg-gray-200 rounded-xl flex-1"></div>
+            <div className="h-10 bg-gray-200 rounded-xl w-24"></div>
+          </div>
+        </div>
+        
+        {/* Skeleton Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 md:gap-5">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div key={i} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
+              <div className="h-32 md:h-40 bg-gray-200 w-full" />
+              <div className="p-4 space-y-3">
+                <div className="h-4 bg-gray-200 rounded w-3/4" />
+                <div className="h-3 bg-gray-200 rounded w-1/2" />
+                <div className="flex justify-between items-center pt-2">
+                  <div className="h-4 bg-gray-200 rounded w-1/3" />
+                  <div className="h-6 bg-gray-200 rounded-full w-8" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -265,14 +292,20 @@ export default function HomePage() {
 
       {/* ── Loading State ──────────────────────────────────────────────── */}
       {isLoading && (
-        <div className="flex flex-col items-center justify-center py-32 gap-4">
-          <div className="relative">
-            <div className="absolute inset-0 bg-indigo-400 blur-2xl opacity-20 rounded-full scale-150" />
-            <Loader2 size={48} className="animate-spin text-indigo-600 relative z-10" />
-          </div>
-          <p className="text-gray-400 font-bold tracking-widest uppercase text-xs animate-pulse">
-            {submittedSearch ? `Searching for "${submittedSearch}"...` : "Loading Catalog..."}
-          </p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 md:gap-5 animate-pulse mt-4">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div key={i} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
+              <div className="h-32 md:h-40 bg-gray-200 w-full" />
+              <div className="p-4 space-y-3">
+                <div className="h-4 bg-gray-200 rounded w-3/4" />
+                <div className="h-3 bg-gray-200 rounded w-1/2" />
+                <div className="flex justify-between items-center pt-2">
+                  <div className="h-4 bg-gray-200 rounded w-1/3" />
+                  <div className="h-8 bg-gray-200 rounded-xl w-full max-w-[80px]" />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

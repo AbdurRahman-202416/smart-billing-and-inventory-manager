@@ -28,8 +28,42 @@ export default function HistoryPage() {
 
   if (!mounted) {
     return (
-      <div className="flex h-[50vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-600"></div>
+      <div className="space-y-6 animate-pulse">
+        {/* Skeleton Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="space-y-2">
+            <div className="h-8 bg-gray-200 rounded-md w-64" />
+            <div className="h-4 bg-gray-200 rounded-md w-48" />
+          </div>
+          <div className="h-12 bg-gray-200 rounded-xl w-32" />
+        </div>
+
+        {/* Skeleton Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden h-72">
+              <div className="h-12 bg-gray-50 border-b border-gray-100 flex items-center px-5 justify-between">
+                <div className="h-4 bg-gray-200 rounded w-24" />
+                <div className="h-5 bg-gray-200 rounded w-16" />
+              </div>
+              <div className="p-5 space-y-4">
+                <div className="flex justify-between">
+                  <div className="h-3 bg-gray-200 rounded w-20" />
+                  <div className="h-3 bg-gray-200 rounded w-20" />
+                </div>
+                <div className="space-y-3 pt-3">
+                  <div className="h-3 bg-gray-200 rounded w-16" />
+                  {Array.from({ length: 3 }).map((_, j) => (
+                    <div key={j} className="flex justify-between">
+                      <div className="h-4 bg-gray-200 rounded w-1/2" />
+                      <div className="h-4 bg-gray-200 rounded w-12" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

@@ -96,9 +96,46 @@ export default function ProductDetailsPage() {
 
   if (!mounted || loading) {
     return (
-      <div className="flex h-[70vh] flex-col items-center justify-center space-y-4">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-indigo-100 border-t-indigo-600"></div>
-        <p className="text-gray-500 font-medium">Loading product details...</p>
+      <div className="max-w-6xl mx-auto space-y-8 animate-pulse">
+        {/* Back Button Skeleton */}
+        <div className="h-6 bg-gray-200 rounded w-24 mb-6" />
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Left Side: Product Image Skeleton */}
+          <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden p-8 aspect-square flex items-center justify-center">
+            <div className="w-64 h-64 bg-gray-100 rounded-2xl" />
+          </div>
+
+          {/* Right Side: Product Info Skeleton */}
+          <div className="space-y-6">
+            <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-8 space-y-6">
+              <div className="space-y-4">
+                <div className="h-4 bg-gray-200 rounded w-20" />
+                <div className="h-10 bg-gray-200 rounded w-3/4" />
+                <div className="h-6 bg-gray-200 rounded w-1/2" />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 pb-6 border-b border-gray-50">
+                <div className="h-20 bg-gray-50 rounded-2xl" />
+                <div className="h-20 bg-gray-50 rounded-2xl" />
+              </div>
+
+              <div className="flex flex-wrap gap-4">
+                <div className="h-12 bg-indigo-100 rounded-2xl w-40" />
+                <div className="h-12 bg-gray-100 rounded-2xl w-40" />
+              </div>
+            </div>
+
+            {/* Additional details skeleton */}
+            <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-8 space-y-4">
+               <div className="h-6 bg-gray-200 rounded w-32" />
+               <div className="space-y-2">
+                 <div className="h-4 bg-gray-200 rounded w-full" />
+                 <div className="h-4 bg-gray-200 rounded w-5/6" />
+               </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
