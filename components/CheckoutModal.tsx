@@ -8,8 +8,8 @@ import type { CartItem } from "@/types";
 const SHOP = {
   name: "Smart Mart",
   tagline: "Quality you can trust",
-  address: "123 Main Street, City — 400001",
-  phone: "+91 98765 43210",
+  address: "Dhaka , Bangladesh",
+  phone: "+8801723456789",
   gstin: "27AAAAA0000A1Z5",
 } as const;
 
@@ -154,7 +154,7 @@ export default function CheckoutModal({ cart, onCompleteSale, onClose }: Props) 
                   </p>
                   <p>
                     <span className="text-gray-400">Cashier:</span>{" "}
-                    <span className="font-medium">Admin</span>
+                    <span className="font-medium">Abdur Rahman</span>
                   </p>
                 </div>
                 <div className="text-right space-y-0.5 text-gray-600">
@@ -222,7 +222,7 @@ export default function CheckoutModal({ cart, onCompleteSale, onClose }: Props) 
                   <span className="tabular-nums">Tk{subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-gray-400 text-xs">
-                  <span>CGST + SGST (0%)</span>
+                  <span>+VAT (0%)</span>
                   <span>Tk0.00</span>
                 </div>
               </div>
