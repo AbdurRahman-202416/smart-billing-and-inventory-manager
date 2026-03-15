@@ -104,7 +104,7 @@ export default function CheckoutModal({ cart, onCompleteSale, onClose }: Props) 
 
       {/* ── Backdrop ─────────────────────────────────────────────────────────── */}
       <div
-        className="fixed inset-0 bg-black/70 z-50 overflow-y-auto py-8 px-4"
+        className="fixed inset-0 bg-black/70 z-50 overflow-y-auto px-4 pt-20 pb-10 md:py-12"
         onClick={(e) => {
           if (e.target === e.currentTarget) onClose();
         }}
@@ -112,13 +112,13 @@ export default function CheckoutModal({ cart, onCompleteSale, onClose }: Props) 
         {/* ── Close button (top-right, hidden during print) ─────────────────── */}
         <button
           onClick={onClose}
-          className="fixed top-4 right-4 z-[60] bg-white rounded-full p-2 shadow-lg text-gray-400 hover:text-gray-700 transition-colors print:hidden"
+          className="fixed top-4 right-4 z-[60] bg-white rounded-full p-2.5 shadow-lg text-gray-500 hover:text-gray-800 transition-colors print:hidden"
           aria-label="Close"
         >
-          <X size={18} />
+          <X size={20} />
         </button>
 
-        <div className="max-w-sm mx-auto space-y-3">
+        <div className="max-w-sm mx-auto space-y-4">
           {/* ── Receipt card ─────────────────────────────────────────────────── */}
           <div
             id="checkout-receipt"
