@@ -95,12 +95,12 @@ export default function InventoryPage() {
       const { data } = await foodApi.get<FoodApiResponse>(`/product/${barcode}.json`);
 
       if (data.status !== 1 || !data.product) {
-        toast.error("Couldn't find this product online. No worries, you can fill in the details manually!");
+        toast.error("Couldn't find this product online. No worries  you can fill in the details manually!");
         return;
       }
 
       const p = data.product;
-      
+
       // Smart splitting of quantity (e.g., "400 g" or "1kg")
       const qty = p.quantity || "";
       const match = qty.match(/^([\d.]+)\s*(.*)$/);
@@ -462,68 +462,68 @@ export default function InventoryPage() {
                   transition={{ duration: 0.2 }}
                   className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow flex flex-col group relative"
                 >
-                {/* Product image */}
-                <Link href={`/product/${product.id}`} className="h-32 md:h-40 bg-gray-50 flex items-center justify-center p-3 relative cursor-pointer">
-                  <div className="absolute inset-0 bg-indigo-600/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  {product.image ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="h-full w-full object-contain"
-                    />
-                  ) : (
-                    <Package size={44} className="text-gray-200" />
-                  )}
-                </Link>
-
-                {/* Card body */}
-                <div className="p-4 space-y-1">
-                  <Link href={`/product/${product.id}`}>
-                    <p className="font-semibold text-gray-800 text-xs md:text-sm truncate hover:text-indigo-600 cursor-pointer">{product.name}</p>
+                  {/* Product image */}
+                  <Link href={`/product/${product.id}`} className="h-32 md:h-40 bg-gray-50 flex items-center justify-center p-3 relative cursor-pointer">
+                    <div className="absolute inset-0 bg-indigo-600/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    {product.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="h-full w-full object-contain"
+                      />
+                    ) : (
+                      <Package size={44} className="text-gray-200" />
+                    )}
                   </Link>
 
-                  {product.brand && (
-                    <p className="text-xs text-gray-500 truncate">{product.brand}</p>
-                  )}
+                  {/* Card body */}
+                  <div className="p-4 space-y-1">
+                    <Link href={`/product/${product.id}`}>
+                      <p className="font-semibold text-gray-800 text-xs md:text-sm truncate hover:text-indigo-600 cursor-pointer">{product.name}</p>
+                    </Link>
 
-                  <div className="flex items-center justify-between pt-1">
-                    <span className="text-indigo-600 font-bold text-xs md:text-sm">
-                      Tk{product.price.toFixed(2)}
-                    </span>
-                    <span
-                      className={`text-[10px] sm:text-xs text-nowrap px-2 py-0.5 rounded-full font-medium ${stockBadge(
-                        product.stock
-                      )}`}
+                    {product.brand && (
+                      <p className="text-xs text-gray-500 truncate">{product.brand}</p>
+                    )}
+
+                    <div className="flex items-center justify-between pt-1">
+                      <span className="text-indigo-600 font-bold text-xs md:text-sm">
+                        Tk{product.price.toFixed(2)}
+                      </span>
+                      <span
+                        className={`text-[10px] sm:text-xs text-nowrap px-2 py-0.5 rounded-full font-medium ${stockBadge(
+                          product.stock
+                        )}`}
+                      >
+                        {product.stock} in stock
+                      </span>
+                    </div>
+
+                    {product.unit && (
+                      <p className="text-xs text-gray-400">{product.unit}</p>
+                    )}
+
+                    {product.category && (
+                      <span className="inline-block text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
+                        {product.category}
+                      </span>
+                    )}
+
+                    {product.barcode && (
+                      <p className="text-[10px] sm:text-sm text-gray-300 font-mono truncate pt-1">
+                        Code:{product.barcode}
+                      </p>
+                    )}
+
+                    <button
+                      onClick={() => handleDelete(product.id, product.name)}
+                      className="absolute top-2 right-2 p-1.5 bg-white/90 backdrop-blur-sm rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 transition-all shadow-sm border border-gray-100"
+                      title="Delete Product"
                     >
-                      {product.stock} in stock
-                    </span>
+                      <Trash2 size={16} />
+                    </button>
                   </div>
-
-                  {product.unit && (
-                    <p className="text-xs text-gray-400">{product.unit}</p>
-                  )}
-
-                  {product.category && (
-                    <span className="inline-block text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
-                      {product.category}
-                    </span>
-                  )}
-
-                  {product.barcode && (
-                    <p className="text-[10px] sm:text-sm text-gray-300 font-mono truncate pt-1">
-                      Code:{product.barcode}
-                    </p>
-                  )}
-
-                  <button
-                    onClick={() => handleDelete(product.id, product.name)}
-                    className="absolute top-2 right-2 p-1.5 bg-white/90 backdrop-blur-sm rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 transition-all shadow-sm border border-gray-100"
-                    title="Delete Product"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -562,7 +562,7 @@ export default function InventoryPage() {
                 </div>
                 <h3 className="text-xl font-bold text-gray-800 mb-2">Delete Product?</h3>
                 <p className="text-sm text-gray-500 mb-6">
-                  Are you sure you want to delete <span className="font-semibold text-gray-800">"{deleteData.name}"</span>? 
+                  Are you sure you want to delete <span className="font-semibold text-gray-800">"{deleteData.name}"</span>?
                   This action cannot be undone.
                 </p>
 
@@ -576,9 +576,8 @@ export default function InventoryPage() {
                         setAdminError(false);
                       }}
                       placeholder="Enter Admin Password"
-                      className={`w-full px-4 py-3 rounded-xl border ${
-                        adminError ? 'border-red-500 bg-red-50' : 'border-gray-200 focus:ring-2 focus:ring-red-500 focus:border-transparent'
-                      } text-center text-sm transition-all focus:outline-none`}
+                      className={`w-full px-4 py-3 rounded-xl border ${adminError ? 'border-red-500 bg-red-50' : 'border-gray-200 focus:ring-2 focus:ring-red-500 focus:border-transparent'
+                        } text-center text-sm transition-all focus:outline-none`}
                       autoFocus
                       onKeyDown={(e) => e.key === 'Enter' && confirmDelete()}
                     />
