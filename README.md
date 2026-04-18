@@ -1,96 +1,156 @@
-# 🛒 Smart Inventory & POS Manager
+# Smart Billing and Inventory Manager
 
-A Next-generation, Mobile-Responsive Retail Management System built with **Next.js 15**, **Tailwind CSS**, and **Zustand**. Designed for ease of use, speed, and efficiency in managing inventory and sales.
+A retail point-of-sale (POS) and inventory management system built for small to mid-size stores. It runs entirely in the browser with local storage persistence, requiring no backend or database setup.
 
----
+Built with Next.js 16, React 19, TypeScript, Tailwind CSS, Zustand, and Framer Motion.
 
-## 🚀 Key Modules
 
-### 🌏 1. Global Product Sourcing
-Integrated with the **Open Food Facts API**, this module allows you to instantly fetch product data for millions of Bangladeshi and international products.
-- **Instant Search:** Manual search with loading indicators and optimized API calls.
-- **One-Click Stocking:** Add products from the global registry directly to your inventory with a single click.
-- **Smart Image Loading:** Powered by Next.js optimized `<Image />` component.
+## Features
 
-### 📦 2. Strategic Inventory Manager
-A centralized hub to manage your stock levels, categories, and pricing.
-- **Scan to Add:** Integrated barcode scanner for lightning-fast data entry.
-- **Split Measurement Fields:** Separate fields for Size Value (e.g., 500) and Unit (e.g., g, kg, L) for precision.
-- **Admin Security:** Deleted products are protected by a secure admin password (`1234`).
-- **Responsive Grid:** Intelligent layout that adapts from 1 column on mobile to 4+ columns on larger screens.
+### Product Sourcing Catalog
+- Browse and search products from the OpenFoodFacts global database
+- Add products to your local inventory with one click
+- Automatic product detail fetching (name, brand, image, size, category)
+- Pagination and cached search results
 
-### 💰 3. POS Terminal (Billing)
-A professional point-of-sale interface optimized for both desktop and mobile devices.
-- **Live POS Scanner:** High-speed barcode scanning with laser animations and audio feedback.
-- **Smart Cart:** Automatic quantity handling and subtotal calculations.
-- **Mobile-First POS:** Fixed sticky sidebar on desktop transforms into a slim bottom navigation on mobile.
-- **Invoice Generation:** Generate professional invoices for every sale.
+### Inventory Management
+- Add products manually or by scanning barcodes with the device camera
+- Barcode scanning powered by the html5-qrcode library with auto-detection of rear cameras
+- Duplicate barcode detection: re-adding a product with the same barcode merges stock counts instead of creating duplicates
+- Search and filter inventory by name, brand, barcode, or category
+- Admin-protected product deletion (default PIN: 1234)
 
-### 📊 4. Sales Reports & History
-Track every transaction with a built-in sales history logger.
-- **Persistence:** All data is saved locally using Zustand with LocalStorage persistence.
+### Billing / POS Terminal
+- Continuous barcode scanning modal for adding items to the cart
+- Manual barcode entry and inventory search for quick product lookup
+- Cart with quantity controls, per-item subtotals, and a grand total
+- 3-second per-barcode cooldown to prevent accidental duplicate scans
+- Same-barcode items merge into a single cart row with incremented quantity
+- Audio feedback with distinct tones for successful scans and errors
 
----
+### Checkout
+- Invoice generation with shop details, itemized breakdown, date, and invoice ID
+- Print-optimized receipt layout
 
-## 🛠️ Technology Stack
+### Sales Dashboard
+- Summary stats: total revenue, invoice count, average bill, items sold
+- 7-day revenue bar chart
+- Date filtering (today, this week, this month, all time)
+- Timeline-grouped invoice list with expandable detail view
+- Search invoices by ID or product name
 
-- **Framework:** [Next.js 15](https://nextjs.org/) (App Router)
-- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
-- **State Management:** [Zustand](https://github.com/pmndrs/zustand)
-- **Animations:** [Framer Motion](https://www.framer.com/motion/)
-- **Icons:** [Lucide React](https://lucide.dev/)
-- **Data Fetching:** [React Query](https://tanstack.com/query/latest) & Axios
-- **Scanner:** [html5-qrcode](https://github.com/mebjas/html5-qrcode)
 
----
+## Tech Stack
 
-## 📱 Mobile-First Design Principles
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 16 (App Router, Turbopack) |
+| Language | TypeScript 5 |
+| UI | React 19, Tailwind CSS 3 |
+| State | Zustand with localStorage persistence |
+| Animations | Framer Motion |
+| Data Fetching | Axios, TanStack React Query |
+| Barcode Scanning | html5-qrcode |
+| Notifications | react-hot-toast |
+| Icons | Lucide React |
 
-This project follows a professional **Mobile-First** approach:
-- **Responsive Sidebar:** Full sidebar on desktop; sleek **Bottom Navigation Bar** on mobile for easy thumb access.
-- **Fluid Grids:** Layouts automatically adjust based on screen width (1-column on mobile, up to 6-column on wide screens).
-- **Touch-Friendly UI:** Large buttons, intuitive spacing, and modal-based interactions.
 
----
+## Project Structure
 
-## 🔧 Getting Started
+```
+app/
+  page.tsx              Product sourcing catalog (home page)
+  billing/page.tsx      POS terminal with scanner and cart
+  history/page.tsx      Sales dashboard and invoice history
+  inventory/page.tsx    Inventory management and product entry
+  product/[id]/         Individual product detail page
 
-### 1. Installation
+components/
+  BarcodeScanner.tsx    Single-scan modal (used in inventory)
+  BillingScanner.tsx    Continuous-scan modal (used in billing)
+  LiveScanner.tsx       Inline always-on scanner component
+  CheckoutModal.tsx     Invoice generation and print layout
+  Sidebar.tsx           App navigation (sidebar on desktop, bottom bar on mobile)
+  ToasterProvider.tsx   Toast notification configuration
+  QueryProvider.tsx     TanStack Query provider wrapper
+
+store/
+  useStore.ts           Zustand store (inventory, cart, bills)
+
+types/
+  index.ts              TypeScript interfaces (Product, CartItem, Bill)
+
+lib/
+  axios.ts              Axios instance for OpenFoodFacts API
+  sounds.ts             Synthesized audio feedback (no external files needed)
+```
+
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18 or later
+- npm, yarn, or pnpm
+
+### Installation
+
 ```bash
+git clone <repository-url>
+cd smart-billing-and-inventory-manager
 npm install
 ```
 
-### 2. Development Mode
+### Development
+
 ```bash
 npm run dev
 ```
-Visit `http://localhost:3000` to see the app.
 
-### 3. Build for Production
+The app starts at `http://localhost:3000`.
+
+### Production Build
+
 ```bash
 npm run build
 npm start
 ```
 
----
 
-## 📝 Recent Updates & Fixes
-- **Scanner Stability:** Fixed "Cannot transition to a new state" error by adding a robust lifecycle guard.
-- **Search Optimization:** Optimized API calls to Open Food Facts with manual triggers and full-page loading overlays.
-- **Inventory UI:** Enhanced card design with always-visible delete buttons on mobile.
-- **Admin Password:** Updated management settings (Current Admin PIN: `1234`).
-- **Vercel Readiness:** Added `vercel.json` and optimized memory usage for smoother deployments.
+## Pages
 
----
+| Route | Purpose |
+|---|---|
+| `/` | Browse and import products from OpenFoodFacts |
+| `/inventory` | Manage local product inventory |
+| `/billing` | POS terminal for scanning and checkout |
+| `/history` | Sales reports and invoice history |
+| `/product/[id]` | Product detail view |
 
-## 📂 Project Structure
-```text
-├── app/              # Next.js App Router (Pages)
-├── components/       # Reusable UI Components
-├── store/            # Zustand State Management
-├── lib/              # Utility functions and API clients
-├── types/            # TypeScript Interface definitions
-└── public/           # Static assets (images, sounds)
+
+## Mobile-First Design
+
+- Responsive sidebar on desktop transforms into a bottom navigation bar on mobile
+- Fluid grid layouts that adjust from 1 column on mobile to 5+ columns on wide screens
+- Touch-friendly controls with large tap targets and modal-based interactions
+- Safe area support for notched devices
+
+
+## Data Persistence
+
+All data (inventory, cart, bills) is stored in the browser via localStorage under the key `billing-store`. No server or database is required. Clearing browser data will reset the application state.
+
+
+## Configuration
+
+Shop details for receipts can be updated in `components/CheckoutModal.tsx`:
+
+```typescript
+const SHOP = {
+  name: "Smart Mart",
+  tagline: "Quality you can trust",
+  address: "Dhaka, Bangladesh",
+  phone: "+8801723456789",
+  gstin: "27AAAAA0000A1Z5",
+};
 ```
-
-**Designed with ❤️ for Smart Retailers.**
