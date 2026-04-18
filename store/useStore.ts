@@ -30,9 +30,29 @@ export const useStore = create<StoreState>()(
       bills: [],
 
       addProduct: (product) =>
-        set((state) => ({
-          inventory: [...state.inventory, product],
-        })),
+        set((state) => {
+          // If a product with the same barcode exists, merge stock instead of duplicating
+          if (product.barcode) {
+            const existing = state.inventory.find(
+              (p) => p.barcode === product.barcode
+            );
+            if (existing) {
+              return {
+                inventory: state.inventory.map((p) =>
+                  p.barcode === product.barcode
+                    ? {
+                        ...p,
+                        stock: p.stock + product.stock,
+                        price: product.price,
+                        updatedAt: new Date().toISOString(),
+                      }
+                    : p
+                ),
+              };
+            }
+          }
+          return { inventory: [...state.inventory, product] };
+        }),
 
       removeProduct: (productId) =>
         set((state) => ({
@@ -49,17 +69,20 @@ export const useStore = create<StoreState>()(
           return;
         }
 
-        const existingItem = cart.find((item) => item.product.id === product.id);
+        // Match by barcode so duplicate inventory entries still merge in cart
+        const existingItem = cart.find(
+          (item) => item.product.barcode === barcode
+        );
 
         if (existingItem) {
           set((state) => ({
             cart: state.cart.map((item) =>
-              item.product.id === product.id
+              item.product.barcode === barcode
                 ? {
-                  ...item,
-                  quantity: item.quantity + 1,
-                  subtotal: (item.quantity + 1) * item.product.price,
-                }
+                    ...item,
+                    quantity: item.quantity + 1,
+                    subtotal: (item.quantity + 1) * item.product.price,
+                  }
                 : item
             ),
           }));
