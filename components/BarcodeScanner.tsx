@@ -83,7 +83,7 @@ export default function BarcodeScanner({ onScan, onClose }: Props) {
       setStatus("active");
     } catch (err: unknown) {
       console.error("Scanner start error:", err);
-      setErrorMsg("Failed to start camera. Check permissions.");
+      setErrorMsg("Camera access denied. Please allow camera permissions and try again.");
       setStatus("error");
     } finally {
       transitioningRef.current = false;
@@ -189,14 +189,17 @@ export default function BarcodeScanner({ onScan, onClose }: Props) {
         <div className="px-4 pb-4">
           <div className="relative aspect-square w-full bg-black rounded-2xl overflow-hidden">
             {status === "error" ? (
-              <div className="flex flex-col items-center justify-center h-full gap-4 text-center px-6">
-                <div className="w-14 h-14 bg-red-500/10 rounded-2xl flex items-center justify-center">
+              <div className="flex flex-col items-center justify-center h-full gap-3 text-center px-6">
+                <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center">
                   <CameraOff size={28} className="text-red-400" />
                 </div>
-                <p className="text-sm text-red-400 font-medium">{errorMsg}</p>
+                <div>
+                  <p className="text-sm text-white font-semibold mb-1">Camera unavailable</p>
+                  <p className="text-xs text-gray-400 leading-relaxed max-w-[220px]">{errorMsg}</p>
+                </div>
                 <button
                   onClick={() => startScanner()}
-                  className="px-4 py-2 bg-white/10 hover:bg-white/15 text-white rounded-lg text-xs font-medium transition-colors"
+                  className="px-5 py-2 bg-white/10 hover:bg-white/15 text-white rounded-xl text-xs font-semibold transition-colors"
                 >
                   Try again
                 </button>

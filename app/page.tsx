@@ -311,29 +311,36 @@ export default function HomePage() {
 
       {/* ── Error State ────────────────────────────────────────────────── */}
       {!isLoading && fetchError && products.length === 0 && (
-        <div className="bg-red-50 border border-red-100 text-red-700 p-8 md:p-12 rounded-2xl text-center max-w-md mx-auto">
-          <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
-            <Globe2 className="text-red-500" size={24} />
+        <div className="bg-white border border-gray-100 rounded-3xl p-10 md:p-14 text-center max-w-md mx-auto shadow-sm">
+          <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Globe2 className="text-red-400" size={28} />
           </div>
-          <h3 className="font-bold text-base mb-1">Connection Issue</h3>
-          <p className="text-sm text-red-600/70 mb-4">{fetchError}</p>
+          <h3 className="font-bold text-lg text-gray-800 mb-2">Connection trouble</h3>
+          <p className="text-sm text-gray-400 leading-relaxed mb-6">
+            We couldn&apos;t reach the product catalog right now. This usually means a network issue on your end or the server is temporarily down.
+          </p>
           <button
             onClick={() => fetchProducts(submittedSearch, page)}
-            className="bg-red-600 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition-colors"
+            className="bg-gray-900 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-800 transition-colors active:scale-95"
           >
-            Try Again
+            Try again
           </button>
         </div>
       )}
 
       {/* ── Inline error banner (when products loaded but refresh failed) ── */}
       {!isLoading && fetchError && products.length > 0 && (
-        <div className="flex items-center gap-3 bg-amber-50 border border-amber-200 text-amber-800 px-4 py-2.5 rounded-xl text-sm">
-          <Globe2 size={16} className="shrink-0 text-amber-500" />
-          <span className="flex-1">Failed to refresh. Showing cached results.</span>
+        <div className="flex items-center gap-3 bg-amber-50/80 border border-amber-200 text-amber-800 px-4 py-3 rounded-xl text-sm">
+          <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center shrink-0">
+            <Globe2 size={15} className="text-amber-600" />
+          </div>
+          <div className="flex-1">
+            <p className="font-semibold text-amber-800 text-xs">Refresh failed</p>
+            <p className="text-[11px] text-amber-600 mt-0.5">Showing cached results. Your connection may be unstable.</p>
+          </div>
           <button
             onClick={() => fetchProducts(submittedSearch, page)}
-            className="text-amber-700 font-semibold hover:underline text-xs shrink-0"
+            className="px-3 py-1.5 bg-amber-200 hover:bg-amber-300 text-amber-800 font-semibold rounded-lg text-xs shrink-0 transition-colors"
           >
             Retry
           </button>
@@ -342,21 +349,21 @@ export default function HomePage() {
 
       {/* ── No Results State ──────────────────────────────────────────── */}
       {noResults && (
-        <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
-          <div className="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center">
-            <SearchX size={36} className="text-indigo-300" />
+        <div className="flex flex-col items-center justify-center py-24 text-center">
+          <div className="w-20 h-20 bg-gray-50 rounded-3xl flex items-center justify-center mb-5">
+            <SearchX size={36} className="text-gray-200" />
           </div>
-          <h3 className="font-semibold text-gray-700 text-lg">No Products Found</h3>
-          <p className="text-sm text-gray-400 max-w-sm">
-            Oops! No products found for{" "}
-            <strong className="text-gray-600">&quot;{submittedSearch}&quot;</strong>. Please try a
-            different keyword or scan the barcode directly.
+          <h3 className="font-bold text-gray-700 text-lg mb-2">Nothing found</h3>
+          <p className="text-sm text-gray-400 max-w-xs leading-relaxed">
+            We couldn&apos;t find any products matching
+            {" "}<strong className="text-gray-600">&quot;{submittedSearch}&quot;</strong>.
+            Try a different keyword or browse all products.
           </p>
           <button
             onClick={handleClear}
-            className="mt-2 bg-indigo-600 text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-700 transition-all active:scale-95"
+            className="mt-6 bg-gray-900 text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-gray-800 transition-all active:scale-95"
           >
-            Browse All Products
+            Browse all products
           </button>
         </div>
       )}

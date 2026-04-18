@@ -65,7 +65,7 @@ export const useStore = create<StoreState>()(
         const product = inventory.find((p) => p.barcode === barcode);
 
         if (!product) {
-          toast.error(`No product found with barcode: ${barcode}`);
+          toast.error(`Oops! No product matches barcode ${barcode}. Try adding it to inventory first.`);
           return;
         }
 

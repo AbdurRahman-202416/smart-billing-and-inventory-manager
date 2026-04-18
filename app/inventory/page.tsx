@@ -95,7 +95,7 @@ export default function InventoryPage() {
       const { data } = await foodApi.get<FoodApiResponse>(`/product/${barcode}.json`);
 
       if (data.status !== 1 || !data.product) {
-        toast.error("Product not found in OpenFoodFacts — fill details manually.");
+        toast.error("Couldn't find this product online. No worries, you can fill in the details manually!");
         return;
       }
 
@@ -115,9 +115,9 @@ export default function InventoryPage() {
         sizeValue: sizeValue || prev.sizeValue,
         unitType: unitType || prev.unitType,
       }));
-      toast.success("Successfully fetched product details!");
+      toast.success("Product details loaded! Review and save when ready.");
     } catch {
-      toast.error("Network error fetching product data — fill details manually.");
+      toast.error("Network hiccup! Check your connection and try again, or fill details manually.");
     } finally {
       setFetching(false);
     }
@@ -144,7 +144,7 @@ export default function InventoryPage() {
 
     addProduct(newProduct);
     setForm(EMPTY_FORM);
-    toast.success("Product added to inventory!");
+    toast.success("Product added to your inventory!");
   };
 
   const handleDelete = (id: string, name: string) => {
@@ -157,12 +157,12 @@ export default function InventoryPage() {
     if (adminPassword === "1234") {
       if (deleteData) {
         removeProduct(deleteData.id);
-        toast.success(`Deleted ${deleteData.name}`);
+        toast.success(`"${deleteData.name}" removed from inventory.`);
         setDeleteData(null);
       }
     } else {
       setAdminError(true);
-      toast.error("Incorrect admin password!");
+      toast.error("Wrong password! Please try again.");
     }
   };
 
@@ -428,9 +428,26 @@ export default function InventoryPage() {
         </div>
 
         {filteredInventory.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-gray-400">
-            <Package size={52} className="mb-3 opacity-20" />
-            <p className="text-sm">{searchQuery ? "No products match your search." : "No products yet — scan a barcode to get started."}</p>
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="w-20 h-20 bg-gray-50 rounded-3xl flex items-center justify-center mb-4">
+              <Package size={36} className="text-gray-200" />
+            </div>
+            <p className="text-sm font-semibold text-gray-500 mb-1">
+              {searchQuery ? "No matches found" : "Your inventory is empty"}
+            </p>
+            <p className="text-xs text-gray-400 text-center max-w-[260px]">
+              {searchQuery
+                ? `No products match "${searchQuery}". Try a different search term.`
+                : "Scan a barcode or add products manually to build your inventory."}
+            </p>
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="mt-4 text-xs font-semibold text-indigo-600 hover:text-indigo-700 transition-colors"
+              >
+                Clear search
+              </button>
+            )}
           </div>
         ) : (
           <motion.div layout className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">

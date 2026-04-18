@@ -299,7 +299,7 @@ export default function HistoryPage() {
               <div key={i} className="flex-1 flex flex-col items-center gap-1.5 group">
                 {/* Value tooltip on hover */}
                 <div className="text-[9px] font-bold text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity tabular-nums">
-                  {day.value > 0 ? `Tk${day.value.toFixed(0)}` : "—"}
+                  {day.value > 0 ? `Tk${day.value.toFixed(0)}` : "0"}
                 </div>
                 <div className="w-full flex justify-center" style={{ height: "80px" }}>
                   <motion.div

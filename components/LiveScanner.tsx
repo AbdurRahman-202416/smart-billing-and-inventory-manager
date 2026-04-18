@@ -69,7 +69,7 @@ export default function LiveScanner({ onScan }: Props) {
       setStatus("active");
     } catch (err: unknown) {
       console.error("Scanner start error:", err);
-      setErrorMsg("Camera access failed. Is it in use by another app?");
+      setErrorMsg("Camera access denied. Please allow camera permissions and try again.");
       setStatus("error");
     } finally {
       transitioningRef.current = false;
@@ -163,15 +163,18 @@ export default function LiveScanner({ onScan }: Props) {
       {/* Scanner body */}
       {status === "error" ? (
         <div className="flex flex-col items-center justify-center gap-3 py-16 px-6 text-center">
-          <div className="w-14 h-14 bg-red-500/10 rounded-2xl flex items-center justify-center">
-            <CameraOff size={24} className="text-red-400" />
+          <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center">
+            <CameraOff size={26} className="text-red-400" />
           </div>
-          <p className="text-xs text-red-400 font-medium">{errorMsg}</p>
+          <div>
+            <p className="text-sm text-white font-semibold mb-1">Camera unavailable</p>
+            <p className="text-xs text-gray-400 leading-relaxed max-w-[220px]">{errorMsg}</p>
+          </div>
           <button
             onClick={() => window.location.reload()}
-            className="text-xs text-gray-500 hover:text-indigo-400 underline underline-offset-2 transition-colors"
+            className="px-4 py-2 bg-white/10 hover:bg-white/15 text-white rounded-xl text-xs font-semibold transition-colors mt-1"
           >
-            Allow permissions & reload
+            Reload page
           </button>
         </div>
       ) : (

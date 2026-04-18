@@ -284,7 +284,12 @@ export default function BillingPage() {
                   </div>
                 )}
                 {searchQuery.trim() && filteredProducts.length === 0 && (
-                  <p className="text-xs text-gray-400 text-center py-2">No products found</p>
+                  <div className="flex flex-col items-center py-4 gap-1.5">
+                    <Search size={20} className="text-gray-200" />
+                    <p className="text-xs text-gray-400 text-center">
+                      No products match &ldquo;{searchQuery}&rdquo;
+                    </p>
+                  </div>
                 )}
               </div>
             )}
@@ -312,9 +317,9 @@ export default function BillingPage() {
                   </>
                 ) : (
                   <>
-                    <p className="font-semibold">Not in inventory</p>
-                    <p className="text-xs mt-0.5 font-mono text-red-500 truncate">
-                      {scannedInfo.barcode}
+                    <p className="font-semibold">Product not found</p>
+                    <p className="text-xs mt-0.5 text-red-500">
+                      Barcode <span className="font-mono">{scannedInfo.barcode}</span> isn&apos;t in your inventory yet.
                     </p>
                   </>
                 )}
@@ -355,20 +360,27 @@ export default function BillingPage() {
 
           {/* Empty state */}
           {cart.length === 0 ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-gray-400 p-6">
-              <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mb-4">
-                <ShoppingCart size={28} className="text-gray-200" />
+            <div className="flex-1 flex flex-col items-center justify-center p-6">
+              <div className="relative mb-5">
+                <div className="w-20 h-20 bg-indigo-50 rounded-3xl flex items-center justify-center">
+                  <ShoppingCart size={32} className="text-indigo-200" />
+                </div>
+                <div className="absolute -top-1 -right-1 w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center">
+                  <span className="text-[10px] font-bold text-gray-400">0</span>
+                </div>
               </div>
-              <p className="text-sm font-medium text-gray-500 mb-1">Cart is empty</p>
-              <p className="text-xs text-gray-400 text-center max-w-[200px]">Scan a barcode, search products, or type a barcode manually to get started.</p>
-              <div className="mt-8 w-full max-w-[220px] space-y-2 opacity-40">
-                <div className="flex justify-between text-xs">
+              <p className="text-sm font-bold text-gray-600 mb-1">Nothing in cart yet</p>
+              <p className="text-xs text-gray-400 text-center max-w-[220px] leading-relaxed">
+                Open the scanner, search for products, or type a barcode to start adding items.
+              </p>
+              <div className="mt-8 w-full max-w-[220px] space-y-2 opacity-30">
+                <div className="flex justify-between text-xs text-gray-400">
                   <span>Subtotal</span><span>Tk0.00</span>
                 </div>
-                <div className="flex justify-between text-xs">
-                  <span>Tax</span><span>--</span>
+                <div className="flex justify-between text-xs text-gray-400">
+                  <span>Tax</span><span>0.00</span>
                 </div>
-                <div className="border-t border-gray-200 pt-2 flex justify-between text-sm font-medium">
+                <div className="border-t border-gray-200 pt-2 flex justify-between text-sm font-medium text-gray-400">
                   <span>Total</span><span>Tk0.00</span>
                 </div>
               </div>
@@ -480,7 +492,7 @@ export default function BillingPage() {
                   </div>
                   <div className="flex justify-between text-gray-400 text-xs">
                     <span>Tax / GST</span>
-                    <span>—</span>
+                    <span>0.00</span>
                   </div>
                 </div>
 

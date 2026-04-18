@@ -6,23 +6,37 @@ export default function ToasterProvider() {
   return (
     <Toaster
       position="top-center"
+      reverseOrder={false}
+      gutter={10}
       toastOptions={{
-        className: "text-sm sm:text-base font-bold max-w-[90vw] sm:max-w-md text-center shadow-lg",
+        className:
+          "text-sm font-semibold max-w-[90vw] sm:max-w-md shadow-xl",
         duration: 3000,
         style: {
-          background: "#333",
-          color: "#fff",
-          padding: "12px 20px",
+          padding: "14px 20px",
           borderRadius: "16px",
+          gap: "10px",
         },
         success: {
           style: {
-            background: "#10B981", // green-500
+            background: "#ecfdf5",
+            color: "#065f46",
+            border: "1px solid #a7f3d0",
+          },
+          iconTheme: {
+            primary: "#10b981",
+            secondary: "#fff",
           },
         },
         error: {
           style: {
-            background: "#EF4444", // red-500
+            background: "#fef2f2",
+            color: "#991b1b",
+            border: "1px solid #fecaca",
+          },
+          iconTheme: {
+            primary: "#ef4444",
+            secondary: "#fff",
           },
         },
       }}
