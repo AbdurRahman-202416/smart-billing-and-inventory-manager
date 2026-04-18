@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Scan, CameraOff, RefreshCw } from "lucide-react";
+import { Scan, CameraOff, RefreshCw, Zap, Focus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Props {
@@ -24,6 +24,7 @@ export default function LiveScanner({ onScan }: Props) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [cameras, setCameras] = useState<{ id: string; label: string }[]>([]);
   const [activeCamIndex, setActiveCamIndex] = useState(0);
+  const [scanPulse, setScanPulse] = useState(false);
 
   const stopScanner = async () => {
     if (instanceRef.current && startedRef.current) {
@@ -41,25 +42,29 @@ export default function LiveScanner({ onScan }: Props) {
 
     transitioningRef.current = true;
     setStatus("starting");
-    
+
     try {
       await stopScanner();
 
-      // Use specific ID or preferred facing mode
       const config = cameraId ? { deviceId: { exact: cameraId } } : { facingMode: "environment" };
 
       await instanceRef.current.start(
         config,
         {
           fps: 30,
-          qrbox: { width: 400, height: 400 }, // Bigger frame!
+          qrbox: { width: 400, height: 400 },
           aspectRatio: 1.0,
-          disableFlip: true, // Fix movement inversion logic
+          disableFlip: true,
         },
-        (decodedText: string) => onScanRef.current(decodedText),
-        () => {} // ignore misses
+        (decodedText: string) => {
+          // Flash the scan pulse animation
+          setScanPulse(true);
+          setTimeout(() => setScanPulse(false), 600);
+          onScanRef.current(decodedText);
+        },
+        () => {}
       );
-      
+
       startedRef.current = true;
       setStatus("active");
     } catch (err: unknown) {
@@ -72,31 +77,29 @@ export default function LiveScanner({ onScan }: Props) {
   }, []);
 
   useEffect(() => {
-    let instance: any = null;
-
     import("html5-qrcode").then(async ({ Html5Qrcode }) => {
-      instance = new Html5Qrcode("live-reader");
+      const instance = new Html5Qrcode("live-reader");
       instanceRef.current = instance;
 
       try {
         const devices = await Html5Qrcode.getCameras();
         if (devices && devices.length > 0) {
-          setCameras(devices.map(d => ({ id: d.id, label: d.label })));
-          
-          // Try to find a back camera by default for better angle
-          const backCamIndex = devices.findIndex(d => 
-            d.label.toLowerCase().includes("back") || 
-            d.label.toLowerCase().includes("rear") ||
-            d.label.toLowerCase().includes("environment")
+          setCameras(devices.map((d) => ({ id: d.id, label: d.label })));
+
+          const backCamIndex = devices.findIndex(
+            (d) =>
+              d.label.toLowerCase().includes("back") ||
+              d.label.toLowerCase().includes("rear") ||
+              d.label.toLowerCase().includes("environment")
           );
-          
+
           const initialIndex = backCamIndex !== -1 ? backCamIndex : 0;
           setActiveCamIndex(initialIndex);
           startScanner(devices[initialIndex].id);
         } else {
-          startScanner(); // Fallback to facingMode
+          startScanner();
         }
-      } catch (err) {
+      } catch {
         startScanner();
       }
     });
@@ -117,103 +120,177 @@ export default function LiveScanner({ onScan }: Props) {
     startScanner(cameras[nextIndex].id);
   };
 
-  const badge = {
-    starting: "bg-gray-100 text-gray-500",
-    active: "bg-green-100 text-green-700",
-    error: "bg-red-100 text-red-500",
-  }[status];
-
-  const badgeLabel = {
-    starting: "Starting…",
-    active: "● Active",
-    error: "Error",
-  }[status];
-
   return (
-    <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+    <div className="bg-gray-900 rounded-2xl overflow-hidden shadow-lg">
       {/* Header */}
-      <div className="flex items-center gap-2 px-5 py-4 border-b border-gray-100 bg-gray-50/50">
-        <Scan size={18} className="text-indigo-500" />
-        <h2 className="font-bold text-gray-700 text-sm">POS Scanner</h2>
-        
-        <div className="ml-auto flex items-center gap-2">
+      <div className="flex items-center gap-2 px-4 py-3">
+        <div className="flex items-center gap-2 flex-1">
+          <div className="w-7 h-7 bg-indigo-500/20 rounded-lg flex items-center justify-center">
+            <Scan size={14} className="text-indigo-400" />
+          </div>
+          <span className="text-sm font-medium text-gray-200">Scanner</span>
+        </div>
+
+        <div className="flex items-center gap-2">
           {cameras.length > 1 && (
-            <button 
+            <button
               onClick={switchCamera}
-              className="p-1.5 hover:bg-white rounded-lg border border-gray-200 text-gray-500 transition-all active:rotate-180 duration-500"
-              title="Switch Camera View"
+              className="p-1.5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors"
+              aria-label="Switch camera"
             >
               <RefreshCw size={14} />
             </button>
           )}
-          <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${badge}`}>
-            {badgeLabel}
-          </span>
+
+          {/* Status dot */}
+          <div className="flex items-center gap-1.5">
+            <div
+              className={`w-1.5 h-1.5 rounded-full ${
+                status === "active"
+                  ? "bg-green-400 shadow-[0_0_6px_rgba(74,222,128,0.8)]"
+                  : status === "error"
+                  ? "bg-red-400"
+                  : "bg-yellow-400 animate-pulse"
+              }`}
+            />
+            <span className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">
+              {status === "active" ? "Live" : status === "error" ? "Error" : "Init"}
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Body */}
+      {/* Scanner body */}
       {status === "error" ? (
         <div className="flex flex-col items-center justify-center gap-3 py-16 px-6 text-center">
-          <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mb-2">
+          <div className="w-14 h-14 bg-red-500/10 rounded-2xl flex items-center justify-center">
             <CameraOff size={24} className="text-red-400" />
           </div>
-          <p className="text-xs font-bold text-red-500 uppercase tracking-widest">{errorMsg}</p>
-          <button 
+          <p className="text-xs text-red-400 font-medium">{errorMsg}</p>
+          <button
             onClick={() => window.location.reload()}
-            className="text-[11px] text-gray-400 hover:text-indigo-600 underline font-medium"
+            className="text-xs text-gray-500 hover:text-indigo-400 underline underline-offset-2 transition-colors"
           >
-            Allow Permissions & Reload
+            Allow permissions & reload
           </button>
         </div>
       ) : (
-        <div className="relative p-3 bg-white">
-          {status === "starting" && (
-            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-white/90 backdrop-blur-md rounded-2xl py-12">
-              <div className="h-10 w-10 animate-spin rounded-full border-[3px] border-indigo-100 border-t-indigo-600"></div>
-              <p className="text-[11px] text-gray-400 font-bold uppercase tracking-tighter">Adjusting Optics...</p>
+        <div className="relative">
+          {/* Loading overlay */}
+          <AnimatePresence>
+            {status === "starting" && (
+              <motion.div
+                initial={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4 }}
+                className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-gray-900"
+              >
+                {/* Animated rings */}
+                <div className="relative w-16 h-16">
+                  <motion.div
+                    animate={{ scale: [1, 1.4, 1], opacity: [0.3, 0, 0.3] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute inset-0 rounded-full border-2 border-indigo-500/30"
+                  />
+                  <motion.div
+                    animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.1, 0.5] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+                    className="absolute inset-0 rounded-full border-2 border-indigo-400/40"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                      className="w-8 h-8 rounded-full border-2 border-indigo-500/20 border-t-indigo-500"
+                    />
+                  </div>
+                </div>
+                <p className="text-[11px] text-gray-500 font-medium tracking-wide">Initializing camera...</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Camera feed */}
+          <div
+            id="live-reader"
+            className={`w-full aspect-square bg-gray-950 ${
+              status === "starting" ? "opacity-0" : "opacity-100"
+            } transition-opacity duration-500`}
+            style={{ transform: "rotate(0deg) scaleX(1) scaleY(1)" }}
+          />
+
+          {/* Scan overlay */}
+          {status === "active" && (
+            <div className="absolute inset-0 pointer-events-none z-20">
+              {/* Vignette edges */}
+              <div className="absolute inset-0 shadow-[inset_0_0_80px_rgba(0,0,0,0.6)]" />
+
+              {/* Center finder frame */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="relative w-[65%] aspect-square">
+                  {/* Corner brackets — animated entrance */}
+                  {[
+                    "top-0 left-0 border-t-[3px] border-l-[3px] rounded-tl-xl",
+                    "top-0 right-0 border-t-[3px] border-r-[3px] rounded-tr-xl",
+                    "bottom-0 left-0 border-b-[3px] border-l-[3px] rounded-bl-xl",
+                    "bottom-0 right-0 border-b-[3px] border-r-[3px] rounded-br-xl",
+                  ].map((classes, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.1 + i * 0.08, duration: 0.3, ease: "backOut" }}
+                      className={`absolute w-8 h-8 border-indigo-400 ${classes}`}
+                    />
+                  ))}
+
+                  {/* Scanning laser beam */}
+                  <motion.div
+                    animate={{ y: ["0%", "900%", "0%"] }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: [0.45, 0.05, 0.55, 0.95],
+                    }}
+                    className="absolute top-2 left-2 right-2 h-[2px]"
+                  >
+                    {/* Beam glow */}
+                    <div className="w-full h-full bg-gradient-to-r from-transparent via-indigo-400 to-transparent" />
+                    {/* Beam shine spread */}
+                    <div className="absolute -top-3 left-0 right-0 h-8 bg-gradient-to-b from-indigo-400/15 to-transparent" />
+                  </motion.div>
+
+                  {/* Scan success pulse */}
+                  <AnimatePresence>
+                    {scanPulse && (
+                      <motion.div
+                        initial={{ opacity: 0.8, scale: 0.95 }}
+                        animate={{ opacity: 0, scale: 1.15 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="absolute inset-0 rounded-xl border-2 border-green-400 bg-green-400/10"
+                      />
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+
+              {/* Bottom info chip */}
+              <div className="absolute bottom-3 left-0 right-0 flex justify-center">
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  className="flex items-center gap-1.5 bg-black/50 backdrop-blur-sm text-white/70 text-[9px] font-medium px-3 py-1.5 rounded-full"
+                >
+                  <Zap size={9} className="text-indigo-400" />
+                  {cameras[activeCamIndex]
+                    ? cameras[activeCamIndex].label.split("(")[0].trim() || "Camera"
+                    : "Default camera"}
+                </motion.div>
+              </div>
             </div>
           )}
-          <div className="relative">
-            <div
-              id="live-reader"
-              className={`w-full aspect-square rounded-2xl overflow-hidden bg-gray-50 ${
-                status === "starting" ? "opacity-0" : "opacity-100"
-              } transition-opacity duration-300`}
-              style={{ transform: "rotate(0deg) scaleX(1) scaleY(1)" }}
-            />
-            
-            {/* ── Scanning Overlay ────────────────────────────────────────── */}
-            {status === "active" && (
-              <div className="absolute inset-0 pointer-events-none z-20 flex items-center justify-center p-8">
-                {/* Darken peripheral area */}
-                <div className="absolute inset-0 bg-black/20" />
-                
-                {/* Finder Box */}
-                <div className="relative w-full aspect-square max-w-[400px] border-2 border-dashed border-white/30 bg-transparent overflow-hidden">
-                  {/* Corners */}
-                  <div className="absolute top-0 left-0 w-12 h-12 border-t-4 border-l-4 border-green-500 rounded-tl-xl shadow-[0_0_15px_rgba(34,197,94,0.8)]" />
-                  <div className="absolute top-0 right-0 w-12 h-12 border-t-4 border-r-4 border-green-500 rounded-tr-xl shadow-[0_0_15px_rgba(34,197,94,0.8)]" />
-                  <div className="absolute bottom-0 left-0 w-12 h-12 border-b-4 border-l-4 border-green-500 rounded-bl-xl shadow-[0_0_15px_rgba(34,197,94,0.8)]" />
-                  <div className="absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4 border-green-500 rounded-br-xl shadow-[0_0_15px_rgba(34,197,94,0.8)]" />
-                  
-                  {/* ── Framer Motion Laser Line (100% Guaranteed to animate) ── */}
-                  <motion.div 
-                    animate={{ top: ["0%", "100%", "0%"] }}
-                    transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
-                    className="absolute left-0 w-full h-[3px] bg-red-600 shadow-[0_0_20px_rgba(239,68,68,1)] z-30"
-                  />
-                </div>
-
-                {/* Status Indicator (Bottom) */}
-                {cameras[activeCamIndex] && (
-                  <div className="absolute bottom-6 bg-black/50 backdrop-blur-md text-white text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest opacity-70">
-                    {cameras[activeCamIndex].label.split('(')[0].trim() || 'Default Lens'}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
         </div>
       )}
     </div>

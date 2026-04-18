@@ -13,9 +13,12 @@ import {
   CheckCircle2,
   Clock,
   Monitor,
+  Search,
+  Keyboard,
+  Scan,
 } from "lucide-react";
 import { useStore } from "@/store/useStore";
-import LiveScanner from "@/components/LiveScanner";
+import BillingScanner from "@/components/BillingScanner";
 import CheckoutModal from "@/components/CheckoutModal";
 import { playScanSuccess, playScanError } from "@/lib/sounds";
 
@@ -45,26 +48,25 @@ export default function BillingPage() {
   const [scannedInfo, setScannedInfo] = useState<ScannedInfo | null>(null);
   const cooldownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showCheckout, setShowCheckout] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [flash, setFlash] = useState<"success" | "error" | null>(null);
+  const [manualBarcode, setManualBarcode] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // ── Scan handler ────────────────────────────────────────────────────────────
+  // ── Scan handler (manual entry / search) ──────────────────────────────────
   const handleScan = useCallback(
     (barcode: string) => {
       const now = Date.now();
       const lastScan = cooldownMap.current.get(barcode) ?? 0;
-
-      // Silently drop re-scans within the cooldown window
       if (now - lastScan < COOLDOWN_MS) return;
-
-      // Record new scan time
       cooldownMap.current.set(barcode, now);
 
-      // Look up product before dispatching so we can play the right sound
       const product = inventory.find((p) => p.barcode === barcode);
 
       if (product) {
@@ -76,10 +78,8 @@ export default function BillingPage() {
       }
       setTimeout(() => setFlash(null), 300);
 
-      // Dispatch to store (alerts internally when barcode not found)
       addToCartByBarcode(barcode);
 
-      // Update banner — clear any previous timer first
       if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current);
       setScannedInfo({
         barcode,
@@ -90,6 +90,55 @@ export default function BillingPage() {
     },
     [addToCartByBarcode, inventory]
   );
+
+  // ── Scan handler for modal scanner (returns result) ─────────────────────
+  const handleModalScan = useCallback(
+    (barcode: string): { found: boolean; name: string | null } => {
+      const product = inventory.find((p) => p.barcode === barcode);
+
+      if (product) {
+        playScanSuccess();
+        setFlash("success");
+      } else {
+        playScanError();
+        setFlash("error");
+      }
+      setTimeout(() => setFlash(null), 300);
+
+      addToCartByBarcode(barcode);
+
+      if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current);
+      setScannedInfo({
+        barcode,
+        productName: product?.name ?? null,
+        expiresAt: Date.now() + COOLDOWN_MS,
+      });
+      cooldownTimerRef.current = setTimeout(() => setScannedInfo(null), COOLDOWN_MS);
+
+      return { found: !!product, name: product?.name ?? null };
+    },
+    [addToCartByBarcode, inventory]
+  );
+
+  // ── Manual barcode entry ──────────────────────────────────────────────────────
+  const handleManualBarcode = () => {
+    const code = manualBarcode.trim();
+    if (!code) return;
+    handleScan(code);
+    setManualBarcode("");
+  };
+
+  // ── Search inventory for quick add ──────────────────────────────────────────
+  const filteredProducts = searchQuery.trim()
+    ? inventory.filter((p) => {
+        const q = searchQuery.toLowerCase();
+        return (
+          p.name.toLowerCase().includes(q) ||
+          p.brand?.toLowerCase().includes(q) ||
+          p.barcode?.toLowerCase().includes(q)
+        );
+      }).slice(0, 6)
+    : [];
 
   // ── Derived totals ───────────────────────────────────────────────────────────
   const grandTotal = cart.reduce((sum, item) => sum + item.subtotal, 0);
@@ -140,15 +189,106 @@ export default function BillingPage() {
           }`}
         />
       )}
-      <h1 className="text-xl md:text-2xl font-bold text-gray-800 mb-4 md:mb-6 flex items-center gap-2 md:gap-3">
-        <Monitor className="text-indigo-600" size={24} />
+      <h1 className="text-xl md:text-2xl font-semibold text-gray-800 mb-4 md:mb-6 flex items-center gap-2">
+        <Monitor className="text-indigo-600" size={22} />
         Retail POS Terminal
       </h1>
 
       <div className="flex flex-col lg:flex-row gap-4 md:gap-6 items-start">
         {/* ── LEFT: Scanner panel ───────────────────────────────────────────── */}
         <div className="w-full lg:w-80 xl:w-96 shrink-0 space-y-3">
-          <LiveScanner onScan={handleScan} />
+          {/* Open scanner button */}
+          <button
+            onClick={() => setShowScanner(true)}
+            className="w-full flex items-center justify-center gap-3 bg-gray-900 hover:bg-gray-800 text-white font-semibold py-4 rounded-2xl transition-colors shadow-lg group"
+          >
+            <div className="w-10 h-10 bg-indigo-500/20 rounded-xl flex items-center justify-center group-hover:bg-indigo-500/30 transition-colors">
+              <Scan size={20} className="text-indigo-400" />
+            </div>
+            <div className="text-left">
+              <span className="block text-sm font-semibold">Open Scanner</span>
+              <span className="block text-[10px] text-gray-400 font-medium">Tap to scan product barcodes</span>
+            </div>
+          </button>
+
+          {/* ── Manual barcode entry ────────────────────────────────────── */}
+          <div className="bg-white rounded-xl border border-gray-100 p-3 space-y-2">
+            <div className="flex items-center gap-2 text-xs text-gray-500 font-medium">
+              <Keyboard size={14} />
+              <span>Manual Barcode Entry</span>
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={manualBarcode}
+                onChange={(e) => setManualBarcode(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleManualBarcode()}
+                placeholder="Type or paste barcode..."
+                className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              />
+              <button
+                onClick={handleManualBarcode}
+                disabled={!manualBarcode.trim()}
+                className="px-3 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-40 transition-colors"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+
+          {/* ── Product search ─────────────────────────────────────────────── */}
+          <div className="bg-white rounded-xl border border-gray-100 p-3 space-y-2">
+            <button
+              onClick={() => setShowSearch(!showSearch)}
+              className="flex items-center gap-2 text-xs text-gray-500 font-medium w-full"
+            >
+              <Search size={14} />
+              <span>Search Inventory</span>
+              <span className="ml-auto text-gray-300 text-[10px]">{showSearch ? "Hide" : "Show"}</span>
+            </button>
+            {showSearch && (
+              <div className="space-y-2">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search by name, brand..."
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                />
+                {filteredProducts.length > 0 && (
+                  <div className="space-y-1 max-h-48 overflow-y-auto">
+                    {filteredProducts.map((product) => (
+                      <button
+                        key={product.id}
+                        onClick={() => {
+                          if (product.barcode) handleScan(product.barcode);
+                          setSearchQuery("");
+                        }}
+                        className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-indigo-50 text-left transition-colors"
+                      >
+                        <div className="w-8 h-8 bg-gray-50 rounded border border-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
+                          {product.image ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={product.image} alt="" className="w-full h-full object-contain" />
+                          ) : (
+                            <Package size={14} className="text-gray-300" />
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-gray-800 truncate">{product.name}</p>
+                          <p className="text-[10px] text-gray-400">Tk{product.price.toFixed(2)}</p>
+                        </div>
+                        <Plus size={14} className="text-indigo-500 shrink-0" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {searchQuery.trim() && filteredProducts.length === 0 && (
+                  <p className="text-xs text-gray-400 text-center py-2">No products found</p>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* Last-scanned status banner */}
           {scannedInfo ? (
@@ -215,9 +355,23 @@ export default function BillingPage() {
 
           {/* Empty state */}
           {cart.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-gray-400">
-              <Package size={48} className="mb-3 opacity-20" />
-              <p className="text-sm">Scan a product to add it to the cart.</p>
+            <div className="flex-1 flex flex-col items-center justify-center text-gray-400 p-6">
+              <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mb-4">
+                <ShoppingCart size={28} className="text-gray-200" />
+              </div>
+              <p className="text-sm font-medium text-gray-500 mb-1">Cart is empty</p>
+              <p className="text-xs text-gray-400 text-center max-w-[200px]">Scan a barcode, search products, or type a barcode manually to get started.</p>
+              <div className="mt-8 w-full max-w-[220px] space-y-2 opacity-40">
+                <div className="flex justify-between text-xs">
+                  <span>Subtotal</span><span>Tk0.00</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span>Tax</span><span>--</span>
+                </div>
+                <div className="border-t border-gray-200 pt-2 flex justify-between text-sm font-medium">
+                  <span>Total</span><span>Tk0.00</span>
+                </div>
+              </div>
             </div>
           ) : (
             <>
@@ -333,7 +487,7 @@ export default function BillingPage() {
                 {/* Grand total */}
                 <div className="flex items-center justify-between pt-2 border-t border-gray-200">
                   <span className="text-base font-bold text-gray-800">Grand Total</span>
-                  <span className="text-2xl font-extrabold text-indigo-600 tabular-nums">
+                  <span className="text-2xl font-bold text-indigo-600 tabular-nums">
                     Tk{grandTotal.toFixed(2)}
                   </span>
                 </div>
@@ -352,6 +506,15 @@ export default function BillingPage() {
           )}
         </div>
       </div>
+
+      {/* ── Scanner modal ──────────────────────────────────────────────────── */}
+      {showScanner && (
+        <BillingScanner
+          onScan={handleModalScan}
+          onClose={() => setShowScanner(false)}
+          cartCount={totalQty}
+        />
+      )}
 
       {/* ── Checkout modal ─────────────────────────────────────────────────── */}
       {showCheckout && (

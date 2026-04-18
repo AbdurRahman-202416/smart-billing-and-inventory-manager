@@ -233,160 +233,161 @@ export default function InventoryPage() {
 
   return (
     <div>
-      <h1 className="text-xl md:text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-        <Package className="text-indigo-600" size={24} />
-        Inventory Management Hub
+      <h1 className="text-xl md:text-2xl font-semibold text-gray-800 mb-5 flex items-center gap-2">
+        <Package className="text-indigo-600" size={22} />
+        Inventory Management
       </h1>
 
       {/* ── Add Product card ─────────────────────────────────────────────── */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
-        <h2 className="text-lg font-semibold text-gray-700 mb-5">Add New Product</h2>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 md:p-6 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-base font-semibold text-gray-700">Add New Product</h2>
+          {fetching && (
+            <span className="inline-flex items-center gap-1.5 text-xs text-indigo-500">
+              <Loader2 size={14} className="animate-spin" />
+              Fetching...
+            </span>
+          )}
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Scan row */}
-          <div className="flex flex-wrap items-center gap-3">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Scan + Barcode row */}
+          <div className="flex flex-col sm:flex-row gap-3">
             <button
               type="button"
               onClick={() => setShowScanner(true)}
-              className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+              className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition-colors shrink-0"
             >
               <ScanLine size={16} />
               Scan to Fetch
             </button>
-
-            {form.barcode && (
-              <span className="text-xs font-mono text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                {form.barcode}
-              </span>
-            )}
-
-            {fetching && (
-              <span className="inline-flex items-center gap-1.5 text-sm text-indigo-500">
-                <Loader2 size={14} className="animate-spin" />
-                Fetching product data…
-              </span>
-            )}
-          </div>
-
-          {/* Auto-filled fields */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">
-                Product Name <span className="text-red-400">*</span>{" "}
-                <span className="text-indigo-400">(auto filled after scan)</span>
-              </label>
+            <div className="flex-1">
               <input
                 type="text"
-                value={form.name}
-                onChange={setField("name")}
-                placeholder="e.g. Nutella"
-                required
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">
-                Brand <span className="text-indigo-400">(auto filled after scan)</span>
-              </label>
-              <input
-                type="text"
-                value={form.brand}
-                onChange={setField("brand")}
-                placeholder="e.g. Ferrero"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                value={form.barcode}
+                onChange={setField("barcode")}
+                placeholder="Or type barcode manually..."
+                className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-400"
               />
             </div>
           </div>
 
-          {/* Image preview + URL — only shown once we have a URL */}
-          {form.image && (
-            <div className="flex items-center gap-3">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={form.image}
-                alt="Product preview"
-                className="h-20 w-20 object-contain rounded-lg border border-gray-100 bg-gray-50 shrink-0"
-              />
-              <input
-                type="url"
-                value={form.image}
-                onChange={setField("image")}
-                className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-400 text-gray-500"
-              />
-            </div>
-          )}
-
-          {/* Manual fields */}
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 gap-4">
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">
-                Price (Tk) <span className="text-red-400">*</span>
-              </label>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                value={form.price}
-                onChange={setField("price")}
-                placeholder="0.00"
-                required
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">
-                Initial Stock
-              </label>
-              <input
-                type="number"
-                min="0"
-                value={form.stock}
-                onChange={setField("stock")}
-                placeholder="20"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-              />
-            </div>
-            <div className="col-span-2 md:col-span-2">
-              <label className="block text-xs font-medium text-gray-500 mb-1">
-                Size / Weight
-              </label>
-              <div className="flex gap-2">
+          {/* Product details */}
+          <div className="border-t border-gray-100 pt-4 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">
+                  Product Name <span className="text-red-400">*</span>
+                </label>
                 <input
                   type="text"
-                  value={form.sizeValue}
-                  onChange={setField("sizeValue")}
-                  placeholder="Value"
+                  value={form.name}
+                  onChange={setField("name")}
+                  placeholder="e.g. Nutella"
+                  required
                   className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
                 />
-                <select
-                  value={form.unitType}
-                  onChange={setField("unitType")}
-                  className="w-24 border border-gray-200 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white"
-                >
-                  <option value="">Unit</option>
-                  {UNITS.map(u => <option key={u} value={u}>{u}</option>)}
-                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Brand</label>
+                <input
+                  type="text"
+                  value={form.brand}
+                  onChange={setField("brand")}
+                  placeholder="e.g. Ferrero"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                />
               </div>
             </div>
-            <div className="col-span-2 md:col-span-1">
-              <label className="block text-xs font-medium text-gray-500 mb-1">
-                Category
-              </label>
-              <select
-                value={form.category}
-                onChange={setField("category")}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white"
-              >
-                <option value="">Select Category</option>
-                {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
+
+            {/* Image preview */}
+            {form.image && (
+              <div className="flex items-center gap-3">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={form.image}
+                  alt="Product preview"
+                  className="h-16 w-16 object-contain rounded-lg border border-gray-100 bg-gray-50 shrink-0"
+                />
+                <input
+                  type="url"
+                  value={form.image}
+                  onChange={setField("image")}
+                  className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-400 text-gray-500"
+                />
+              </div>
+            )}
+
+            {/* Pricing & stock */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">
+                  Price (Tk) <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={form.price}
+                  onChange={setField("price")}
+                  placeholder="0.00"
+                  required
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Stock</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={form.stock}
+                  onChange={setField("stock")}
+                  placeholder="1"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Size / Weight</label>
+                <div className="flex gap-1.5">
+                  <input
+                    type="text"
+                    value={form.sizeValue}
+                    onChange={setField("sizeValue")}
+                    placeholder="500"
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                  />
+                  <select
+                    value={form.unitType}
+                    onChange={setField("unitType")}
+                    className="w-20 border border-gray-200 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white"
+                  >
+                    <option value="">Unit</option>
+                    {UNITS.map((u) => (
+                      <option key={u} value={u}>{u}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Category</label>
+                <select
+                  value={form.category}
+                  onChange={setField("category")}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white"
+                >
+                  <option value="">Select</option>
+                  {CATEGORIES.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
 
           <button
             type="submit"
             disabled={!form.name.trim() || !form.price}
-            className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors"
+            className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors"
           >
             <Plus size={16} />
             Add to Inventory

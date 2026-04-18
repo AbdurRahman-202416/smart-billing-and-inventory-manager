@@ -148,7 +148,7 @@ export default function HomePage() {
         brand: item.brands || undefined,
         image: item.image_front_url || item.image_url || undefined,
         barcode: item.code || undefined,
-        price: Math.floor(Math.random() * 500) + 10,
+        price: 0, // Price must be set manually in inventory
         stock: 20,
         unit: item.quantity || "",
         category: item.categories?.split(",")[0]?.trim() || "Grocery",
@@ -207,8 +207,8 @@ export default function HomePage() {
       {/* ── Header ──────────────────────────────────────────────────────── */}
       <div className="flex flex-col gap-4">
         <div>
-          <h1 className="text-xl md:text-2xl font-bold text-gray-800 flex items-center gap-2">
-            <Search className="text-indigo-600" size={24} />
+          <h1 className="text-xl md:text-2xl font-semibold text-gray-800 flex items-center gap-2">
+            <Search className="text-indigo-600" size={22} />
             Product Sourcing Catalog
           </h1>
           <p className="text-xs md:text-sm text-gray-500 mt-1">
@@ -248,7 +248,7 @@ export default function HomePage() {
           <button
             onClick={handleSearch}
             disabled={isLoading}
-            className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md transition-all active:scale-95 flex items-center gap-2 shrink-0"
+            className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white px-5 py-2.5 rounded-xl text-sm font-medium shadow-sm transition-all active:scale-95 flex items-center gap-2 shrink-0"
           >
             {isLoading ? (
               <Loader2 size={16} className="animate-spin" />
@@ -310,16 +310,30 @@ export default function HomePage() {
       )}
 
       {/* ── Error State ────────────────────────────────────────────────── */}
-      {!isLoading && fetchError && (
-        <div className="bg-red-50 border border-red-100 text-red-700 p-8 md:p-12 rounded-3xl text-center max-w-xl mx-auto shadow-xl">
-          <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Globe2 className="text-red-500" size={28} />
+      {!isLoading && fetchError && products.length === 0 && (
+        <div className="bg-red-50 border border-red-100 text-red-700 p-8 md:p-12 rounded-2xl text-center max-w-md mx-auto">
+          <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+            <Globe2 className="text-red-500" size={24} />
           </div>
-          <h3 className="font-extrabold text-lg mb-2">Connection Issue</h3>
-          <p className="opacity-70 text-sm mb-6">{fetchError}</p>
+          <h3 className="font-bold text-base mb-1">Connection Issue</h3>
+          <p className="text-sm text-red-600/70 mb-4">{fetchError}</p>
           <button
             onClick={() => fetchProducts(submittedSearch, page)}
-            className="bg-white border-2 border-red-500 text-red-500 px-6 py-2.5 rounded-xl text-sm font-black hover:bg-red-500 hover:text-white transition-all active:scale-95"
+            className="bg-red-600 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      )}
+
+      {/* ── Inline error banner (when products loaded but refresh failed) ── */}
+      {!isLoading && fetchError && products.length > 0 && (
+        <div className="flex items-center gap-3 bg-amber-50 border border-amber-200 text-amber-800 px-4 py-2.5 rounded-xl text-sm">
+          <Globe2 size={16} className="shrink-0 text-amber-500" />
+          <span className="flex-1">Failed to refresh. Showing cached results.</span>
+          <button
+            onClick={() => fetchProducts(submittedSearch, page)}
+            className="text-amber-700 font-semibold hover:underline text-xs shrink-0"
           >
             Retry
           </button>
@@ -332,7 +346,7 @@ export default function HomePage() {
           <div className="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center">
             <SearchX size={36} className="text-indigo-300" />
           </div>
-          <h3 className="font-extrabold text-gray-700 text-lg">No Products Found</h3>
+          <h3 className="font-semibold text-gray-700 text-lg">No Products Found</h3>
           <p className="text-sm text-gray-400 max-w-sm">
             Oops! No products found for{" "}
             <strong className="text-gray-600">&quot;{submittedSearch}&quot;</strong>. Please try a
@@ -404,16 +418,16 @@ export default function HomePage() {
                     {/* Content */}
                     <div className="p-3 md:p-5 flex-1 flex flex-col">
                       <Link href={`/product/${product.code}`}>
-                        <h3 className="font-bold text-gray-900 text-xs md:text-sm line-clamp-2 leading-tight mb-1 min-h-[2rem] md:min-h-[2.5rem] group-hover:text-indigo-600 transition-colors">
+                        <h3 className="font-semibold text-gray-800 text-xs md:text-sm line-clamp-2 leading-tight mb-1 min-h-[2rem] md:min-h-[2.5rem] group-hover:text-indigo-600 transition-colors">
                           {product.product_name || "Unnamed Item"}
                         </h3>
                       </Link>
-                      <p className="text-[9px] md:text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-3 truncate">
+                      <p className="text-[9px] md:text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-3 truncate">
                         {product.brands || "Generic"}
                       </p>
 
                       <div className="mt-auto space-y-2 md:space-y-3">
-                        <div className="flex items-center justify-between text-[9px] md:text-[10px] font-bold text-gray-400 bg-gray-50 px-2 md:px-3 py-1.5 md:py-2 rounded-lg md:rounded-xl border border-gray-100">
+                        <div className="flex items-center justify-between text-[9px] md:text-[10px] font-medium text-gray-400 bg-gray-50 px-2 md:px-3 py-1.5 md:py-2 rounded-lg border border-gray-100">
                           <span className="truncate max-w-[55%]">{product.quantity || "Std"}</span>
                           <span className="font-mono text-[8px] md:text-[9px]">
                             {product.code?.slice(-6)}
@@ -423,12 +437,12 @@ export default function HomePage() {
                         <button
                           onClick={() => handleAddProduct(product)}
                           disabled={inInventory || addingId === product.code}
-                          className={`w-full flex items-center justify-center gap-1.5 py-2 md:py-3 rounded-xl md:rounded-2xl text-[11px] md:text-xs font-black transition-all ${
+                          className={`w-full flex items-center justify-center gap-1.5 py-2 md:py-2.5 rounded-xl text-[11px] md:text-xs font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
                             inInventory
                               ? "bg-green-50 text-green-600 cursor-not-allowed border border-green-100"
                               : addingId === product.code
                               ? "bg-gray-100 text-gray-400"
-                              : "bg-gray-900 text-white hover:bg-indigo-600 shadow-lg active:scale-95"
+                              : "bg-gray-900 text-white hover:bg-indigo-600 active:scale-95"
                           }`}
                         >
                           {addingId === product.code ? (
@@ -455,23 +469,23 @@ export default function HomePage() {
             <button
               onClick={() => handlePageChange(Math.max(1, page - 1))}
               disabled={page === 1 || isLoading}
-              className="px-4 md:px-6 py-2.5 md:py-3 rounded-xl md:rounded-2xl bg-white border border-gray-200 text-sm font-black shadow-sm hover:bg-gray-50 disabled:opacity-30 transition-all active:scale-95"
+              className="px-4 md:px-5 py-2 md:py-2.5 rounded-xl bg-white border border-gray-200 text-sm font-medium hover:bg-gray-50 disabled:opacity-30 transition-all active:scale-95"
             >
-              <ChevronLeft size={18} className="inline" />
+              <ChevronLeft size={16} className="inline" />
               <span className="hidden sm:inline ml-1">Prev</span>
             </button>
-            <div className="bg-white px-4 md:px-6 py-2.5 md:py-3 rounded-xl md:rounded-2xl border border-gray-200 shadow-sm text-sm font-black text-gray-800">
+            <div className="bg-white px-4 md:px-5 py-2 md:py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 tabular-nums">
               {page}
-              <span className="text-gray-300 mx-2">/</span>
+              <span className="text-gray-300 mx-1.5">/</span>
               {totalPages}
             </div>
             <button
               onClick={() => handlePageChange(page + 1)}
               disabled={page >= totalPages || isLoading}
-              className="px-4 md:px-6 py-2.5 md:py-3 rounded-xl md:rounded-2xl bg-white border border-gray-200 text-sm font-black shadow-sm hover:bg-gray-50 disabled:opacity-30 transition-all active:scale-95"
+              className="px-4 md:px-5 py-2 md:py-2.5 rounded-xl bg-white border border-gray-200 text-sm font-medium hover:bg-gray-50 disabled:opacity-30 transition-all active:scale-95"
             >
               <span className="hidden sm:inline mr-1">Next</span>
-              <ChevronRight size={18} className="inline" />
+              <ChevronRight size={16} className="inline" />
             </button>
           </div>
         </>

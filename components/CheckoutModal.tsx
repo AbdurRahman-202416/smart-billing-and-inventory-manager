@@ -129,7 +129,7 @@ export default function CheckoutModal({ cart, onCompleteSale, onClose }: Props) 
               <div className="text-center space-y-0.5">
                 <div className="flex items-center justify-center gap-2">
                   <Store size={20} className="text-indigo-600" />
-                  <h1 className="text-2xl font-extrabold tracking-wide text-gray-900">
+                  <h1 className="text-2xl font-bold tracking-wide text-gray-900">
                     {SHOP.name}
                   </h1>
                 </div>
@@ -229,10 +229,10 @@ export default function CheckoutModal({ cart, onCompleteSale, onClose }: Props) 
 
               {/* ── Grand total ──────────────────────────────────────────────── */}
               <div className="border-t-4 border-double border-gray-800 pt-3 flex items-baseline justify-between">
-                <span className="text-base font-extrabold text-gray-900 uppercase tracking-wide">
+                <span className="text-base font-bold text-gray-900 uppercase tracking-wide">
                   Grand Total
                 </span>
-                <span className="text-2xl font-extrabold text-indigo-600 tabular-nums">
+                <span className="text-2xl font-bold text-indigo-600 tabular-nums">
                   Tk{grandTotal.toFixed(2)}
                 </span>
               </div>
