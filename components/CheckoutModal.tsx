@@ -8,7 +8,7 @@ import type { CartItem } from "@/types";
 const SHOP = {
   name: "Smart Mart",
   tagline: "Quality you can trust",
-  address: "Dhaka , Bangladesh",
+  address: "Dhaka, Bangladesh",
   phone: "+8801723456789",
   gstin: "27AAAAA0000A1Z5",
 } as const;

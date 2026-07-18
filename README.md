@@ -18,7 +18,7 @@ Built with Next.js 16, React 19, TypeScript, Tailwind CSS, Zustand, and Framer M
 - Barcode scanning powered by the html5-qrcode library with auto-detection of rear cameras
 - Duplicate barcode detection: re-adding a product with the same barcode merges stock counts instead of creating duplicates
 - Search and filter inventory by name, brand, barcode, or category
-- Admin-protected product deletion (default PIN: 1234)
+- Admin-protected product deletion (hardcoded PIN: 1234 — see [Configuration](#configuration))
 
 ### Billing / POS Terminal
 - Continuous barcode scanning modal for adding items to the cart
@@ -49,7 +49,7 @@ Built with Next.js 16, React 19, TypeScript, Tailwind CSS, Zustand, and Framer M
 | UI | React 19, Tailwind CSS 3 |
 | State | Zustand with localStorage persistence |
 | Animations | Framer Motion |
-| Data Fetching | Axios, TanStack React Query |
+| Data Fetching | Axios (inventory and product detail lookups), native `fetch` with a hand-rolled localStorage cache (catalog search) |
 | Barcode Scanning | html5-qrcode |
 | Notifications | react-hot-toast |
 | Icons | Lucide React |
@@ -90,8 +90,8 @@ lib/
 
 ### Prerequisites
 
-- Node.js 18 or later
-- npm, yarn, or pnpm
+- Node.js 20.9 or later (required by Next.js 16)
+- npm (the repo commits a `package-lock.json`; other package managers will ignore it)
 
 ### Installation
 
@@ -116,6 +116,10 @@ npm run build
 npm start
 ```
 
+### Deployment
+
+The repo ships a `vercel.json` (framework, build/install commands, output directory), so the project deploys to Vercel as-is. Any static-capable Next.js host works too — there is no server-side state.
+
 
 ## Pages
 
@@ -131,14 +135,16 @@ npm start
 ## Mobile-First Design
 
 - Responsive sidebar on desktop transforms into a bottom navigation bar on mobile
-- Fluid grid layouts that adjust from 1 column on mobile to 5+ columns on wide screens
+- Fluid grid layouts that adjust from 2 columns on mobile up to 6 columns on wide screens
 - Touch-friendly controls with large tap targets and modal-based interactions
 - Safe area support for notched devices
 
 
 ## Data Persistence
 
-All data (inventory, cart, bills) is stored in the browser via localStorage under the key `billing-store`. No server or database is required. Clearing browser data will reset the application state.
+All domain data (inventory, cart, bills) is stored in the browser via localStorage under the key `billing-store`. No server or database is required.
+
+Two additional localStorage caches exist alongside it: catalog search results are cached per query under `global_products_<term>_<page>` keys (`app/page.tsx`), and a TanStack Query cache is persisted under `SMART_MANAGER_QUERY_CACHE_V1` (`components/QueryProvider.tsx`). To fully reset the app, clear all site data — deleting only `billing-store` leaves cached catalog results behind.
 
 
 ## Configuration
@@ -152,5 +158,7 @@ const SHOP = {
   address: "Dhaka, Bangladesh",
   phone: "+8801723456789",
   gstin: "27AAAAA0000A1Z5",
-};
+} as const;
 ```
+
+The admin PIN for product deletion is a hardcoded string literal in `app/inventory/page.tsx` (search for `"1234"`). It is a client-side convenience guard, not real authentication — change it by editing the source.
